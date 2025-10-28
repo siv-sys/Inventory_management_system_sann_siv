@@ -52,7 +52,12 @@ A comprehensive, professional Inventory Management System built with Flask that 
 ## 📸 Screenshots
 
 ### Dashboard Overview
-![Dashboard](https://via.placeholder.com/800x400/4F46E5/FFFFFF?text=Dashboard+Overview)
+#### image zom in
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
+#### image zom out
+![alt text](image-3.png)
 - **Welcome Panel** - Personalized user greeting
 - **Quick Actions** - Add Product, View Inventory, View Reports, Support
 - **Inventory Distribution** - Total Products, Sales, Orders, Customers
@@ -61,7 +66,7 @@ A comprehensive, professional Inventory Management System built with Flask that 
 - **Inventory Health** - Stock level monitoring with alerts
 
 ### Product Management
-![Product Management](https://via.placeholder.com/800x400/10B981/FFFFFF?text=Product+Management)
+![alt text](image-9.png)
 - **Product Listing** - Complete inventory overview
 - **Stock Status** - Color-coded status indicators (In Stock, Low Stock, Out of Stock)
 - **Quick Actions** - Edit and Delete operations
@@ -69,7 +74,7 @@ A comprehensive, professional Inventory Management System built with Flask that 
 - **Total Value Calculation** - Real-time inventory valuation
 
 ### Add New Product
-![Add Product](https://via.placeholder.com/800x400/F59E0B/FFFFFF?text=Add+New+Product)
+![alt text](image-4.png)
 - **Product Form** - Comprehensive product information
 - **Category Selection** - Type or select from suggestions
 - **Quick Select Categories** - Pre-defined category options
@@ -77,6 +82,12 @@ A comprehensive, professional Inventory Management System built with Flask that 
 - **Description Field** - Detailed product information
 
 ### Analytics Dashboard
+#### image zom in 
+![alt text](image-5.png)
+![alt text](image-6.png)
+![alt text](image-7.png)
+#### image zom out
+![alt text](image-8.png)
 ![Analytics](https://via.placeholder.com/800x400/EF4444/FFFFFF?text=Analytics+Dashboard)
 - **Category Analysis** - Detailed breakdown with percentages
 - **Stock Level Analysis** - Critical inventory monitoring
