@@ -82,7 +82,7 @@ A comprehensive, professional Inventory Management System built with Flask that 
 - **Description Field** - Detailed product information
 
 ### Analytics Dashboard
-# ________________________________________
+--
 
 ![alt text](image-5.png)
 ![alt text](image-6.png)
