@@ -52,12 +52,11 @@ A comprehensive, professional Inventory Management System built with Flask that 
 ## 📸 Screenshots
 
 ### Dashboard Overview
-#### image zom in
+---
 ![alt text](image.png)
 ![alt text](image-1.png)
 ![alt text](image-2.png)
-#### image zom out
-![alt text](image-3.png)
+---
 - **Welcome Panel** - Personalized user greeting
 - **Quick Actions** - Add Product, View Inventory, View Reports, Support
 - **Inventory Distribution** - Total Products, Sales, Orders, Customers
@@ -66,7 +65,9 @@ A comprehensive, professional Inventory Management System built with Flask that 
 - **Inventory Health** - Stock level monitoring with alerts
 
 ### Product Management
+---
 ![alt text](image-9.png)
+---
 - **Product Listing** - Complete inventory overview
 - **Stock Status** - Color-coded status indicators (In Stock, Low Stock, Out of Stock)
 - **Quick Actions** - Edit and Delete operations
