@@ -3,6 +3,7 @@
 {% block title %}Professional Inventory Analytics - Reports{% endblock %}
 
 {% block content %}
+
 <div class="space-y-8" id="report-content">
     <!-- Header Section -->
     <div class="mb-8">
@@ -309,9 +310,19 @@ const reportData = {
     total_value: {{ total_value }},
     categories: {{ categories|tojson }},
     low_stock_items: {{ low_stock_items_dict|tojson }},
-    category_stats: {{ category_stats|tojson }},
+    category_stats: {
+        count: {{ category_stats.count }},
+        highest_value: {
+            name: {{ category_stats.highest_value.name|tojson }},
+            value: {{ category_stats.highest_value.value }}
+        },
+        total_value: {{ category_stats.total_value }}
+    },
     low_stock_stats: {{ low_stock_stats|tojson }},
-    highest_value_category: {{ highest_value_category|tojson }},
+    highest_value_category: [
+        {{ highest_value_category[0]|tojson }}, 
+        {{ highest_value_category[1]|tojson }}
+    ],
     generated_at: "{{ now.strftime('%Y-%m-%d %H:%M:%S') }}"
 };
 

@@ -538,7 +538,10 @@ def report():
     # Calculate category statistics
     category_stats = {
         'count': len(categories),
-        'highest_value': highest_value_category,
+        'highest_value': {
+            'name': highest_value_category[0],
+            'value': highest_value_category[1]['value']
+        },
         'total_value': total_value
     }
     
@@ -554,13 +557,14 @@ def report():
         total_count=total_count,
         total_value=total_value,
         categories=categories,
-        low_stock_items=low_stock_items,  # Keep original for template display
-        low_stock_items_dict=low_stock_items_dict,  # Use this for JSON serialization
+        low_stock_items=low_stock_items,
+        low_stock_items_dict=low_stock_items_dict,
         now=datetime.now(),
         category_stats=category_stats,
         low_stock_stats=low_stock_stats,
         highest_value_category=highest_value_category
     )
+    # ... rest of your report code ...
 # ... (keep the rest of the routes the same)
 # ------------------------- Database Reset ------------------------------------
 
