@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block title %}Add Product - Inventory System{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Add New Product</h1>
+        <p class="text-gray-600">Add a new product to your inventory</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow p-6">
+        <form method="POST" action="{{ url_for('add_product') }}">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Product Name -->
+                <div class="md:col-span-2">
+                    <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-tag mr-2 text-blue-500"></i>Product Name *
+                    </label>
+                    <input type="text" id="name" name="name" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                           placeholder="Enter product name">
+                </div>
+               
+                <!-- Category -->
+                <div>
+                    <label for="category" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-folder mr-2 text-blue-500"></i>Category *
+                    </label>
+                    <div class="relative">
+                        <input type="text" id="category" name="category" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                               placeholder="Type or select a category"
+                               list="category-suggestions">
+                        <datalist id="category-suggestions">
+                            {% for category in existing_categories %}
+                            <option value="{{ category }}">
+                            {% endfor %}
+                            <option value="Electronics">
+                            <option value="Clothing">
+                            <option value="Books">
+                            <option value="Home & Garden">
+                            <option value="Sports">
+                            <option value="Beauty">
+                            <option value="Toys">
+                            <option value="Automotive">
+                            <option value="Food & Beverages">
+                            <option value="Health">
+                            <option value="Office Supplies">
+                            <option value="Pet Supplies">
+                        </datalist>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Type any category or select from suggestions</p>
+                </div>
+               
+                <!-- Price -->
+                <div>
+                    <label for="price" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-dollar-sign mr-2 text-green-500"></i>Price ($) *
+                    </label>
+                    <input type="number" id="price" name="price" step="0.01" min="0" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                           placeholder="0.00">
+                </div>
+               
+                <!-- Quantity -->
+                <div>
+                    <label for="quantity" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-cubes mr-2 text-orange-500"></i>Quantity *
+                    </label>
+                    <input type="number" id="quantity" name="quantity" min="0" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                           placeholder="0">
+                </div>
+               
+                <!-- Description -->
+                <div class="md:col-span-2">
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-align-left mr-2 text-purple-500"></i>Description
+                    </label>
+                    <textarea id="description" name="description" rows="4"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                              placeholder="Enter product description..."></textarea>
+                </div>
+            </div>
+
+            <!-- Quick Select Categories -->
+            <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+                <label class="block text-sm font-medium text-gray-700 mb-3">
+                    <i class="fas fa-bolt mr-2 text-yellow-500"></i>Quick Select Categories:
+                </label>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" onclick="setCategory('Electronics')" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition text-sm font-medium">
+                        <i class="fas fa-laptop mr-1"></i>Electronics
+                    </button>
+                    <button type="button" onclick="setCategory('Clothing')" class="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition text-sm font-medium">
+                        <i class="fas fa-tshirt mr-1"></i>Clothing
+                    </button>
+                    <button type="button" onclick="setCategory('Books')" class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition text-sm font-medium">
+                        <i class="fas fa-book mr-1"></i>Books
+                    </button>
+                    <button type="button" onclick="setCategory('Home & Garden')" class="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition text-sm font-medium">
+                        <i class="fas fa-home mr-1"></i>Home & Garden
+                    </button>
+                    <button type="button" onclick="setCategory('Sports')" class="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition text-sm font-medium">
+                        <i class="fas fa-basketball-ball mr-1"></i>Sports
+                    </button>
+                    <button type="button" onclick="setCategory('Beauty')" class="px-4 py-2 bg-pink-100 text-pink-700 rounded-lg hover:bg-pink-200 transition text-sm font-medium">
+                        <i class="fas fa-spa mr-1"></i>Beauty
+                    </button>
+                    <button type="button" onclick="setCategory('Food & Beverages')" class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition text-sm font-medium">
+                        <i class="fas fa-utensils mr-1"></i>Food & Beverages
+                    </button>
+                    <button type="button" onclick="setCategory('Health')" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition text-sm font-medium">
+                        <i class="fas fa-heartbeat mr-1"></i>Health
+                    </button>
+                </div>
+            </div>
+           
+            <!-- Form Actions -->
+            <div class="mt-8 flex justify-between items-center pt-6 border-t border-gray-200">
+                <a href="{{ url_for('inventory') }}"
+                   class="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition font-medium">
+                    <i class="fas fa-arrow-left mr-2"></i>Back to Inventory
+                </a>
+
+                <div class="flex space-x-3">
+                    <!-- Reset Database Button -->
+                    <a href="{{ url_for('reset_db_route') }}"
+                       class="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition font-medium"
+                       onclick="return confirm('⚠️ Are you sure you want to reset the database? This will delete ALL data and cannot be undone!')">
+                        <i class="fas fa-database mr-2"></i>Reset Database
+                    </a>
+
+                    <button type="submit"
+                            class="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium">
+                        <i class="fas fa-plus mr-2"></i>Add Product
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Function to set category from quick select buttons
+function setCategory(category) {
+    document.getElementById('category').value = category;
+    document.getElementById('category').focus();
+}
+
+// Auto-capitalize category first letter
+document.getElementById('category').addEventListener('blur', function() {
+    if (this.value.trim()) {
+        this.value = this.value.trim().charAt(0).toUpperCase() + this.value.trim().slice(1);
+    }
+});
+
+// Form validation
+document.querySelector('form').addEventListener('submit', function(e) {
+    const name = document.getElementById('name').value.trim();
+    const category = document.getElementById('category').value.trim();
+    const price = document.getElementById('price').value;
+    const quantity = document.getElementById('quantity').value;
+    
+    if (!name) {
+        e.preventDefault();
+        alert('Please enter a product name.');
+        document.getElementById('name').focus();
+        return;
+    }
+    
+    if (!category) {
+        e.preventDefault();
+        alert('Please enter a category.');
+        document.getElementById('category').focus();
+        return;
+    }
+    
+    if (!price || parseFloat(price) < 0) {
+        e.preventDefault();
+        alert('Please enter a valid price.');
+        document.getElementById('price').focus();
+        return;
+    }
+    
+    if (!quantity || parseInt(quantity) < 0) {
+        e.preventDefault();
+        alert('Please enter a valid quantity.');
+        document.getElementById('quantity').focus();
+        return;
+    }
+});
+
+// Add some interactivity
+document.addEventListener('DOMContentLoaded', function() {
+    // Focus on name field when page loads
+    document.getElementById('name').focus();
+    
+    // Add input formatting for price
+    document.getElementById('price').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/[^\d.]/g, '');
+        let parts = value.split('.');
+        if (parts.length > 2) {
+            value = parts[0] + '.' + parts.slice(1).join('');
+        }
+        e.target.value = value;
+    });
+});
+</script>
+{% endblock %}
