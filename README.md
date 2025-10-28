@@ -75,7 +75,9 @@ A comprehensive, professional Inventory Management System built with Flask that 
 - **Total Value Calculation** - Real-time inventory valuation
 
 ### Add New Product
+---
 ![alt text](image-4.png)
+---
 - **Product Form** - Comprehensive product information
 - **Category Selection** - Type or select from suggestions
 - **Quick Select Categories** - Pre-defined category options
@@ -83,12 +85,11 @@ A comprehensive, professional Inventory Management System built with Flask that 
 - **Description Field** - Detailed product information
 
 ### Analytics Dashboard
---
-
+---
 ![alt text](image-5.png)
 ![alt text](image-6.png)
 ![alt text](image-7.png)
-# ________________________________________
+---
 - **Category Analysis** - Detailed breakdown with percentages
 - **Stock Level Analysis** - Critical inventory monitoring
 - **Export Options** - Professional PDF and JSON reports
