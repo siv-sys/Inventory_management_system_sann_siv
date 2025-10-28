@@ -53,9 +53,9 @@ A comprehensive, professional Inventory Management System built with Flask that 
 
 ### Dashboard Overview
 ---
-![alt text](image.png)
-![alt text](image-1.png)
-![alt text](image-2.png)
+![alt text](/images/image.png)
+![alt text](/images/image-1.png)
+![alt text](/images/image-2.png)
 ---
 - **Welcome Panel** - Personalized user greeting
 - **Quick Actions** - Add Product, View Inventory, View Reports, Support
@@ -66,7 +66,7 @@ A comprehensive, professional Inventory Management System built with Flask that 
 
 ### Product Management
 ---
-![alt text](image-9.png)
+![alt text](/images/image-9.png)
 ---
 - **Product Listing** - Complete inventory overview
 - **Stock Status** - Color-coded status indicators (In Stock, Low Stock, Out of Stock)
@@ -76,7 +76,7 @@ A comprehensive, professional Inventory Management System built with Flask that 
 
 ### Add New Product
 ---
-![alt text](image-4.png)
+![alt text](/images/image-4.png)
 ---
 - **Product Form** - Comprehensive product information
 - **Category Selection** - Type or select from suggestions
@@ -86,9 +86,9 @@ A comprehensive, professional Inventory Management System built with Flask that 
 
 ### Analytics Dashboard
 ---
-![alt text](image-5.png)
-![alt text](image-6.png)
-![alt text](image-7.png)
+![alt text](/images/image-5.png)
+![alt text](/images/image-6.png)
+![alt text](/images/image-7.png)
 ---
 - **Category Analysis** - Detailed breakdown with percentages
 - **Stock Level Analysis** - Critical inventory monitoring
