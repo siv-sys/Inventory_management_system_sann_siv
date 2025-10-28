@@ -82,12 +82,14 @@ A comprehensive, professional Inventory Management System built with Flask that 
 - **Description Field** - Detailed product information
 
 ### Analytics Dashboard
-#### image zom in 
+#### image zom in
+________________________________________
+
 ![alt text](image-5.png)
 ![alt text](image-6.png)
 ![alt text](image-7.png)
-#### image zom out
-![alt text](image-8.png)
+
+________________________________________
 ![Analytics](https://via.placeholder.com/800x400/EF4444/FFFFFF?text=Analytics+Dashboard)
 - **Category Analysis** - Detailed breakdown with percentages
 - **Stock Level Analysis** - Critical inventory monitoring
