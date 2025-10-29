@@ -1,0 +1,503 @@
+{% extends "base.html" %}
+
+{% block title %}Recent Orders - Inventory System{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Recent Orders</h1>
+            <p class="text-gray-600 mt-1">View and manage all customer orders</p>
+        </div>
+        <div class="flex space-x-4">
+            <a href="{{ url_for('add_order') }}" 
+               class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+                <i class="fas fa-plus mr-2"></i>
+                New Order
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Total Orders</p>
+                    <p class="text-2xl font-bold text-gray-900">142</p>
+                </div>
+                <div class="bg-blue-100 p-3 rounded-lg">
+                    <i class="fas fa-shopping-cart text-blue-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Pending</p>
+                    <p class="text-2xl font-bold text-gray-900">24</p>
+                </div>
+                <div class="bg-yellow-100 p-3 rounded-lg">
+                    <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Processing</p>
+                    <p class="text-2xl font-bold text-gray-900">18</p>
+                </div>
+                <div class="bg-purple-100 p-3 rounded-lg">
+                    <i class="fas fa-cog text-purple-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-gray-500">Delivered</p>
+                    <p class="text-2xl font-bold text-gray-900">89</p>
+                </div>
+                <div class="bg-green-100 p-3 rounded-lg">
+                    <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+            <h2 class="text-lg font-semibold text-gray-900">All Orders</h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gray-50 border-b border-gray-200">
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-500">Order ID</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-500">Customer</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-500">Date</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-500">Amount</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-500">Status</th>
+                        <th class="px-6 py-3 text-left text-sm font-medium text-gray-500">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for order in orders %}
+                    <tr class="hover:bg-gray-50 transition-colors" id="order-{{ order.order_id }}">
+                        <td class="px-6 py-4">
+                            <div class="font-medium text-gray-900">{{ order.order_id }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="font-medium text-gray-900">{{ order.customer_name }}</div>
+                            <div class="text-sm text-gray-500">{{ order.customer_email }}</div>
+                        </td>
+                        <td class="px-6 py-4 text-gray-900">{{ order.date }}</td>
+                        <td class="px-6 py-4">
+                            <div class="font-semibold text-gray-900">${{ "%.2f"|format(order.amount) }}</div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 text-sm font-medium rounded-full 
+                                {% if order.status == 'Delivered' %}bg-green-100 text-green-800
+                                {% elif order.status == 'Pending' %}bg-yellow-100 text-yellow-800
+                                {% elif order.status == 'Processing' %}bg-purple-100 text-purple-800
+                                {% elif order.status == 'Shipped' %}bg-blue-100 text-blue-800
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                {{ order.status }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex space-x-2">
+                                <!-- View Button -->
+                                <button onclick="viewOrder('{{ order.order_id }}')" 
+                                        class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
+                                        title="View Order Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                
+                                <!-- Edit Button -->
+                                <button onclick="openEditModal('{{ order.order_id }}')" 
+                                        class="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors"
+                                        title="Edit Order">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                
+                                <!-- Delete Button -->
+                                <button onclick="deleteOrder('{{ order.order_id }}', '{{ order.customer_name }}')" 
+                                        class="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
+                                        title="Delete Order">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+            <div class="flex justify-between items-center">
+                <div class="text-sm text-gray-500">
+                    Showing 1 to {{ orders|length }} of 142 orders
+                </div>
+                <div class="flex space-x-2">
+                    <button class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Previous
+                    </button>
+                    <button class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-lg hover:bg-blue-700 transition-colors">
+                        1
+                    </button>
+                    <button class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        2
+                    </button>
+                    <button class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        3
+                    </button>
+                    <button class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Order Modal -->
+<div id="editOrderModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-xl shadow-lg w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-green-100 rounded-lg mr-3">
+                        <i class="fas fa-edit text-green-600"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">Edit Order</h2>
+                </div>
+                <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Edit Form -->
+            <form id="editOrderForm" class="space-y-6">
+                <!-- Customer Information -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Customer Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Customer Name</label>
+                            <input type="text" id="editCustomerName" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                            <input type="email" id="editCustomerEmail" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Details -->
+                <div class="bg-gray-50 p-4 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Order Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Order Date</label>
+                            <input type="date" id="editOrderDate" required
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Amount ($)</label>
+                            <input type="number" id="editOrderAmount" required step="0.01" min="0"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                            <select id="editOrderStatus" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="Pending">Pending</option>
+                                <option value="Processing">Processing</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+                    <button type="button" onclick="closeEditModal()" 
+                            class="px-6 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors">
+                        Cancel
+                    </button>
+                    <button type="button" onclick="updateOrder()" 
+                            class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center">
+                        <i class="fas fa-save mr-2"></i>
+                        Update Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+        <!-- Header -->
+        <div class="flex items-center mb-4">
+            <div class="p-2 bg-red-100 rounded-lg mr-3">
+                <i class="fas fa-exclamation-triangle text-red-600"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900">Confirm Deletion</h3>
+        </div>
+        
+        <!-- Divider -->
+        <div class="border-t border-gray-200 my-4"></div>
+        
+        <!-- Message -->
+        <p class="text-gray-700 mb-6" id="deleteModalText">
+            Are you sure you want to delete order <span class="font-semibold" id="deleteOrderId"></span> for customer <span class="font-semibold" id="deleteCustomerName"></span>? This action cannot be undone.
+        </p>
+        
+        <!-- Divider -->
+        <div class="border-t border-gray-200 my-4"></div>
+        
+        <!-- Buttons -->
+        <div class="flex justify-end space-x-3">
+            <button onclick="closeDeleteModal()" 
+                    class="px-6 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors">
+                Cancel
+            </button>
+            <button onclick="confirmDelete()" 
+                    class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Notification -->
+<div id="successNotification" class="fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50">
+    <div class="flex items-center">
+        <i class="fas fa-check-circle mr-2"></i>
+        <span id="successMessage">Operation completed successfully!</span>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let currentOrderId = null;
+    let currentEditingOrder = null;
+
+    // Edit Order Functions
+    function openEditModal(orderId) {
+        currentEditingOrder = orderId;
+        
+        // Get order data (in real app, this would be an API call)
+        const orderData = getOrderData(orderId);
+        
+        // Populate form fields
+        document.getElementById('editCustomerName').value = orderData.customer_name;
+        document.getElementById('editCustomerEmail').value = orderData.customer_email;
+        document.getElementById('editOrderDate').value = orderData.order_date;
+        document.getElementById('editOrderAmount').value = orderData.amount;
+        document.getElementById('editOrderStatus').value = orderData.status;
+        
+        // Show modal
+        document.getElementById('editOrderModal').classList.remove('hidden');
+    }
+
+    function closeEditModal() {
+        document.getElementById('editOrderModal').classList.add('hidden');
+        currentEditingOrder = null;
+    }
+
+    function updateOrder() {
+        if (!currentEditingOrder) return;
+
+        const form = document.getElementById('editOrderForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        // Show loading state
+        const updateBtn = document.querySelector('#editOrderModal button:last-child');
+        const originalText = updateBtn.innerHTML;
+        updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...';
+        updateBtn.disabled = true;
+
+        // Simulate API call
+        setTimeout(() => {
+            // Update the table row with new data
+            const customerName = document.getElementById('editCustomerName').value;
+            const customerEmail = document.getElementById('editCustomerEmail').value;
+            const orderDate = document.getElementById('editOrderDate').value;
+            const orderAmount = document.getElementById('editOrderAmount').value;
+            const orderStatus = document.getElementById('editOrderStatus').value;
+
+            const orderRow = document.getElementById(`order-${currentEditingOrder}`);
+            if (orderRow) {
+                orderRow.cells[1].innerHTML = `
+                    <div class="font-medium text-gray-900">${customerName}</div>
+                    <div class="text-sm text-gray-500">${customerEmail}</div>
+                `;
+                orderRow.cells[2].textContent = new Date(orderDate).toLocaleDateString('en-US', { 
+                    month: 'short', day: 'numeric', year: 'numeric' 
+                });
+                orderRow.cells[3].innerHTML = `<div class="font-semibold text-gray-900">$${parseFloat(orderAmount).toFixed(2)}</div>`;
+                orderRow.cells[4].innerHTML = `
+                    <span class="px-3 py-1 text-sm font-medium rounded-full 
+                        ${orderStatus === 'Delivered' ? 'bg-green-100 text-green-800' :
+                          orderStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                          orderStatus === 'Processing' ? 'bg-purple-100 text-purple-800' :
+                          orderStatus === 'Shipped' ? 'bg-blue-100 text-blue-800' :
+                          'bg-gray-100 text-gray-800'}">
+                        ${orderStatus}
+                    </span>
+                `;
+            }
+
+            closeEditModal();
+            showNotification(`Order ${currentEditingOrder} updated successfully!`, 'success');
+            
+            updateBtn.innerHTML = originalText;
+            updateBtn.disabled = false;
+        }, 1500);
+    }
+
+    // Helper function to get order data (simulated)
+    function getOrderData(orderId) {
+        const orders = {
+            'ORD-001': {
+                customer_name: 'Robert Brown',
+                customer_email: 'robert@example.com',
+                order_date: '2024-01-25',
+                amount: 399.99,
+                status: 'Delivered'
+            },
+            'ORD-002': {
+                customer_name: 'Emily Davis',
+                customer_email: 'emily@example.com',
+                order_date: '2024-01-22',
+                amount: 999.99,
+                status: 'Pending'
+            },
+            'ORD-003': {
+                customer_name: 'Mike Wilson',
+                customer_email: 'mike@example.com',
+                order_date: '2024-01-20',
+                amount: 648.97,
+                status: 'Processing'
+            },
+            'ORD-004': {
+                customer_name: 'Sarah Johnson',
+                customer_email: 'sarah@example.com',
+                order_date: '2024-01-18',
+                amount: 1099.99,
+                status: 'Shipped'
+            },
+            'ORD-005': {
+                customer_name: 'John Smith',
+                customer_email: 'johns@example.com',
+                order_date: '2024-01-15',
+                amount: 3749.98,
+                status: 'Delivered'
+            }
+        };
+        return orders[orderId] || orders['ORD-001'];
+    }
+
+    // Delete Order Functions
+    function deleteOrder(orderId, customerName) {
+        currentOrderId = orderId;
+        document.getElementById('deleteOrderId').textContent = orderId;
+        document.getElementById('deleteCustomerName').textContent = customerName;
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+        currentOrderId = null;
+    }
+
+    function confirmDelete() {
+        if (currentOrderId) {
+            // Show loading state
+            const deleteBtn = document.querySelector('#deleteModal button:last-child');
+            const originalText = deleteBtn.innerHTML;
+            deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Deleting...';
+            deleteBtn.disabled = true;
+
+            setTimeout(() => {
+                // Remove the order from the table
+                const orderRow = document.getElementById(`order-${currentOrderId}`);
+                if (orderRow) {
+                    orderRow.style.opacity = '0';
+                    orderRow.style.transition = 'opacity 0.3s ease';
+                    setTimeout(() => {
+                        orderRow.remove();
+                        showNotification(`Order ${currentOrderId} deleted successfully`, 'success');
+                    }, 300);
+                }
+
+                closeDeleteModal();
+                deleteBtn.innerHTML = originalText;
+                deleteBtn.disabled = false;
+            }, 1500);
+        }
+    }
+
+    // View Order Function
+    function viewOrder(orderId) {
+        showNotification(`Viewing order ${orderId}`, 'success');
+        console.log(`View order: ${orderId}`);
+    }
+
+    // Show Notification
+    function showNotification(message, type = 'success') {
+        const notification = document.getElementById('successNotification');
+        const messageElement = document.getElementById('successMessage');
+        
+        messageElement.textContent = message;
+        if (type === 'error') {
+            notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50';
+        } else {
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 z-50';
+        }
+        
+        notification.classList.remove('translate-x-full');
+        
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+        }, 3000);
+    }
+
+    // Close modals when clicking outside
+    document.addEventListener('click', function(event) {
+        const deleteModal = document.getElementById('deleteModal');
+        const editModal = document.getElementById('editOrderModal');
+        
+        if (event.target === deleteModal) {
+            closeDeleteModal();
+        }
+        if (event.target === editModal) {
+            closeEditModal();
+        }
+    });
+
+    // Close modals with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeDeleteModal();
+            closeEditModal();
+        }
+    });
+</script>
+{% endblock %}

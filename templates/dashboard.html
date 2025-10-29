@@ -8,15 +8,16 @@
   <!-- Header -->
   <div>
     <h1 class="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
-    <p class="text-gray-600 mt-1">Welcome back, {{ session.get('user_name', 'User') }}! Here's your business overview.</p>
+    <p class="text-gray-600 mt-1">Welcome back, {{ session.get('user_name', 'User') }}! Here's your business overview.
+    </p>
   </div>
 
   <!-- Quick Actions -->
   <div class="bg-white rounded-xl shadow p-6">
     <h2 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <a href="{{ url_for('add_product') }}" 
-         class="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+      <a href="{{ url_for('add_product') }}"
+        class="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
         <div class="p-3 bg-blue-100 rounded-lg mr-4">
           <i class="fas fa-plus text-blue-600 text-xl"></i>
         </div>
@@ -25,9 +26,9 @@
           <p class="text-sm text-gray-600">Add new inventory item</p>
         </div>
       </a>
-      
-      <a href="{{ url_for('inventory') }}" 
-         class="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
+
+      <a href="{{ url_for('inventory') }}"
+        class="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
         <div class="p-3 bg-green-100 rounded-lg mr-4">
           <i class="fas fa-boxes text-green-600 text-xl"></i>
         </div>
@@ -36,9 +37,9 @@
           <p class="text-sm text-gray-600">Manage all products</p>
         </div>
       </a>
-      
-      <a href="{{ url_for('report') }}" 
-         class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+
+      <a href="{{ url_for('report') }}"
+        class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
         <div class="p-3 bg-purple-100 rounded-lg mr-4">
           <i class="fas fa-chart-bar text-purple-600 text-xl"></i>
         </div>
@@ -47,8 +48,9 @@
           <p class="text-sm text-gray-600">Sales & analytics</p>
         </div>
       </a>
-      
-      <div class="flex items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors cursor-pointer" onclick="quickSupport()">
+
+      <div class="flex items-center p-4 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors cursor-pointer"
+        onclick="quickSupport()">
         <div class="p-3 bg-orange-100 rounded-lg mr-4">
           <i class="fas fa-headset text-orange-600 text-xl"></i>
         </div>
@@ -65,6 +67,7 @@
     <!-- Left Column -->
     <div class="lg:col-span-2 space-y-6">
       <!-- Stats Cards -->
+      <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white rounded-xl shadow p-6">
           <div class="flex justify-between items-start">
@@ -72,7 +75,8 @@
               <h3 class="text-sm text-gray-500">Total Products</h3>
               <p class="text-2xl font-bold text-gray-900 mt-2">{{ total_products }}</p>
               <p class="text-sm text-green-500 mt-1 flex items-center">
-                <i class="fas fa-arrow-up mr-1"></i> {{ ((total_products / 50) * 100)|round|int if total_products > 0 else 0 }}% Growth
+                <i class="fas fa-arrow-up mr-1"></i> {{ ((total_products / 50) * 100)|round|int if total_products > 0
+                else 0 }}% Growth
               </p>
             </div>
             <div class="p-3 bg-blue-100 rounded-lg">
@@ -150,15 +154,15 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Legend & Details -->
           <div class="w-full lg:w-3/5 mt-6 lg:mt-0 lg:pl-8">
             <div class="space-y-3">
               {% for category, count in categories.items() %}
               {% set percentage = ((count / total_products) * 100)|round(1) if total_products > 0 else 0 %}
-              <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-                   onmouseover="highlightSlice({{ loop.index0 }})" 
-                   onmouseout="resetHighlight()">
+              <div
+                class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                onmouseover="highlightSlice({{ loop.index0 }})" onmouseout="resetHighlight()">
                 <div class="flex items-center flex-1">
                   <div class="w-4 h-4 rounded-full mr-3 flex-shrink-0
                              {% if loop.index == 1 %}bg-blue-500
@@ -181,7 +185,7 @@
               </div>
               {% endfor %}
             </div>
-            
+
             <!-- Summary Stats -->
             <div class="mt-6 pt-4 border-t border-gray-200">
               <div class="grid grid-cols-2 gap-4 text-center">
@@ -209,7 +213,7 @@
             View All
           </a>
         </div>
-        
+
         <div class="space-y-4">
           {% for product in products %}
           <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
@@ -229,9 +233,7 @@
                          {% elif product.quantity < 10 %}bg-yellow-100 text-yellow-800
                          {% else %}bg-green-100 text-green-800{% endif %}">
                 {% if product.quantity == 0 %}Out of Stock
-                {% elif product.quantity < 10 %}Low Stock
-                {% else %}In Stock{% endif %}
-              </span>
+                {% elif product.quantity < 10 %}Low Stock {% else %}In Stock{% endif %} </span>
             </div>
           </div>
           {% endfor %}
@@ -255,7 +257,7 @@
               <span class="text-xs text-gray-500 block">25% of total</span>
             </div>
           </div>
-          
+
           <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded transition-colors">
             <div class="flex items-center">
               <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
@@ -266,7 +268,7 @@
               <span class="text-xs text-gray-500 block">17% of total</span>
             </div>
           </div>
-          
+
           <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded transition-colors">
             <div class="flex items-center">
               <div class="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
@@ -277,7 +279,7 @@
               <span class="text-xs text-gray-500 block">12% of total</span>
             </div>
           </div>
-          
+
           <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded transition-colors">
             <div class="flex items-center">
               <div class="w-3 h-3 bg-orange-500 rounded-full mr-3"></div>
@@ -288,7 +290,7 @@
               <span class="text-xs text-gray-500 block">20% of total</span>
             </div>
           </div>
-          
+
           <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded transition-colors">
             <div class="flex items-center">
               <div class="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
@@ -299,7 +301,7 @@
               <span class="text-xs text-gray-500 block">9% of total</span>
             </div>
           </div>
-          
+
           <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded transition-colors">
             <div class="flex items-center">
               <div class="w-3 h-3 bg-gray-500 rounded-full mr-3"></div>
@@ -310,7 +312,7 @@
               <span class="text-xs text-gray-500 block">11% of total</span>
             </div>
           </div>
-          
+
           <div class="flex items-center justify-between p-2 hover:bg-gray-50 rounded transition-colors">
             <div class="flex items-center">
               <div class="w-3 h-3 bg-indigo-500 rounded-full mr-3"></div>
@@ -359,10 +361,11 @@
       <div class="bg-white rounded-xl shadow p-6">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-semibold text-gray-900">Recent Orders</h2>
-          <div class="flex items-center text-sm text-blue-600 cursor-pointer hover:text-blue-800">
+          <a href="{{ url_for('recent_orders') }}"
+            class="flex items-center text-sm text-blue-600 cursor-pointer hover:text-blue-800">
             <span>View All</span>
             <i class="fas fa-chevron-right ml-1"></i>
-          </div>
+          </a>
         </div>
         <div class="space-y-3">
           {% for order in recent_orders %}
@@ -394,78 +397,79 @@
   let pieChart;
 
   // Perfect Pie Chart Configuration
-  document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function () {
     const pieCtx = document.getElementById('inventoryPieChart').getContext('2d');
-    
-    const categoryLabels = {{ categories.keys() | list | tojson }};
-    const categoryCounts = {{ categories.values() | list | tojson }};
-    
-    // Beautiful color palette
-    const pieColors = [
-      '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444',
-      '#06b6d4', '#84cc16', '#f97316', '#6366f1', '#ec4899',
-      '#14b8a6', '#f43f5e', '#8b5cf6', '#06b6d4', '#84cc16'
-    ];
-    
-    pieChart = new Chart(pieCtx, {
-      type: 'doughnut',
-      data: {
-        labels: categoryLabels,
-        datasets: [
-          {
-            data: categoryCounts,
-            backgroundColor: pieColors.slice(0, categoryLabels.length),
-            borderColor: '#ffffff',
-            borderWidth: 3,
-            hoverBorderWidth: 4,
-            hoverOffset: 8,
-            spacing: 2
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { 
-          legend: { 
-            display: false
-          },
-          tooltip: {
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-            titleColor: '#1f2937',
-            bodyColor: '#374151',
-            borderColor: '#e5e7eb',
-            borderWidth: 1,
-            cornerRadius: 8,
-            padding: 12,
-            displayColors: true,
-            callbacks: {
-              label: function(context) {
-                const label = context.label || '';
-                const value = context.parsed;
-                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                const percentage = ((value / total) * 100).toFixed(1);
-                return [
-                  `${label}: ${value} products`,
-                  `${percentage}% of total`
-                ];
-              }
+
+    const categoryLabels = {{ categories.keys() | list | tojson
+  }};
+  const categoryCounts = {{ categories.values() | list | tojson }};
+
+  // Beautiful color palette
+  const pieColors = [
+    '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444',
+    '#06b6d4', '#84cc16', '#f97316', '#6366f1', '#ec4899',
+    '#14b8a6', '#f43f5e', '#8b5cf6', '#06b6d4', '#84cc16'
+  ];
+
+  pieChart = new Chart(pieCtx, {
+    type: 'doughnut',
+    data: {
+      labels: categoryLabels,
+      datasets: [
+        {
+          data: categoryCounts,
+          backgroundColor: pieColors.slice(0, categoryLabels.length),
+          borderColor: '#ffffff',
+          borderWidth: 3,
+          hoverBorderWidth: 4,
+          hoverOffset: 8,
+          spacing: 2
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          titleColor: '#1f2937',
+          bodyColor: '#374151',
+          borderColor: '#e5e7eb',
+          borderWidth: 1,
+          cornerRadius: 8,
+          padding: 12,
+          displayColors: true,
+          callbacks: {
+            label: function (context) {
+              const label = context.label || '';
+              const value = context.parsed;
+              const total = context.dataset.data.reduce((a, b) => a + b, 0);
+              const percentage = ((value / total) * 100).toFixed(1);
+              return [
+                `${label}: ${value} products`,
+                `${percentage}% of total`
+              ];
             }
           }
-        },
-        cutout: '65%',
-        animation: {
-          animateScale: true,
-          animateRotate: true,
-          duration: 1000,
-          easing: 'easeOutQuart'
-        },
-        interaction: {
-          intersect: false,
-          mode: 'index'
         }
+      },
+      cutout: '65%',
+      animation: {
+        animateScale: true,
+        animateRotate: true,
+        duration: 1000,
+        easing: 'easeOutQuart'
+      },
+      interaction: {
+        intersect: false,
+        mode: 'index'
       }
-    });
+    }
+  });
   });
 
   // Highlight slice on legend hover

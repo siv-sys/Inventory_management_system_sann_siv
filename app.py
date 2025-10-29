@@ -1,10 +1,10 @@
 import os
+import random
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
-import random
+from datetime import datetime, timedelta
 
 # ------------------------------------------------------------------------------
 # Flask App Configuration
@@ -48,6 +48,36 @@ class Product(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class OrderItem(db.Model):
+    __tablename__ = 'order_items'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    unit_price = db.Column(db.Float, nullable=False)
+    
+    product = db.relationship('Product', backref='order_items')
+
+class Order(db.Model):
+    __tablename__ = 'orders'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.String(20), unique=True, nullable=False)
+    customer_name = db.Column(db.String(100), nullable=False)
+    customer_email = db.Column(db.String(100))
+    customer_phone = db.Column(db.String(20))
+    order_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    amount = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(20), nullable=False, default='Pending')
+    tracking_number = db.Column(db.String(50))
+    shipping_address = db.Column(db.Text)
+    notes = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    items = db.relationship('OrderItem', backref='order', cascade='all, delete-orphan')
+
 class Sale(db.Model):
     __tablename__ = 'sales'
    
@@ -59,17 +89,211 @@ class Sale(db.Model):
     
     product = db.relationship('Product', backref='sales')
 
-class Order(db.Model):
-    __tablename__ = 'orders'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    order_id = db.Column(db.String(20), unique=True, nullable=False)
-    customer_name = db.Column(db.String(100), nullable=False)
-    order_date = db.Column(db.DateTime, nullable=False)
-    amount = db.Column(db.Float, nullable=False)
-    status = db.Column(db.String(20), nullable=False)  # Delivered, Pending, Checkback
-    tracking_number = db.Column(db.String(20))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+# ------------------------------------------------------------------------------
+# Database Initialization
+# ------------------------------------------------------------------------------
+
+
+def init_database():
+    """Initialize the database with sample data"""
+    with app.app_context():
+        # Drop all tables and recreate them to ensure schema matches models
+        print("🔄 Recreating database tables...")
+        db.drop_all()
+        db.create_all()
+        print("✅ Created new database with all tables")
+        
+        # Create default user
+        print("📝 Creating default user...")
+        default_user = User(
+            name='Demo User',
+            email='demo@example.com',
+            image_url='/static/images/default-avatar.png'
+        )
+        default_user.set_password('password123')
+        db.session.add(default_user)
+        db.session.commit()
+        
+        # Create sample products
+        print("📦 Creating sample products...")
+        sample_products = [
+            Product(name='MacBook Pro 16"', category='Electronics', price=2499.99, quantity=15, 
+                   description='High-performance laptop for professionals with M2 Pro chip'),
+            Product(name='iMac 24"', category='Electronics', price=1299.99, quantity=8, 
+                   description='All-in-one desktop computer with 4.5K display'),
+            Product(name='iPad Pro 12.9"', category='Electronics', price=1099.99, quantity=25, 
+                   description='Professional tablet with M2 chip and Liquid Retina XDR display'),
+            Product(name='MacBook Air 13"', category='Electronics', price=999.99, quantity=20, 
+                   description='Lightweight and powerful laptop with M2 chip'),
+            Product(name='iPhone 15 Pro', category='Electronics', price=999.99, quantity=50, 
+                   description='Latest smartphone with titanium design and advanced camera'),
+            Product(name='AirPods Pro (2nd Gen)', category='Electronics', price=249.99, quantity=75, 
+                   description='Wireless noise-cancelling earbuds with MagSafe Charging Case'),
+            Product(name='Apple Watch Series 9', category='Electronics', price=399.99, quantity=30, 
+                   description='Advanced smartwatch with health tracking and S9 chip'),
+            Product(name='Gaming Laptop RTX 4070', category='Electronics', price=1799.99, quantity=8, 
+                   description='High-performance gaming laptop with RGB keyboard and 144Hz display'),
+            Product(name='Premium Cotton T-Shirt', category='Clothing', price=29.99, quantity=45, 
+                   description='Comfortable 100% organic cotton t-shirt in various colors'),
+            Product(name='Python Programming Book', category='Books', price=39.99, quantity=25, 
+                   description='Complete guide to Python programming from beginner to advanced'),
+            Product(name='Wireless Mechanical Keyboard', category='Electronics', price=129.99, quantity=15, 
+                   description='Mechanical keyboard with RGB lighting and wireless connectivity'),
+            Product(name='Noise Cancelling Headphones', category='Electronics', price=299.99, quantity=12, 
+                   description='Over-ear headphones with active noise cancellation'),
+            Product(name='Fitness Tracker Watch', category='Electronics', price=79.99, quantity=35, 
+                   description='Waterproof fitness tracker with heart rate monitoring'),
+            Product(name='Desk Lamp with Wireless Charger', category='Home', price=89.99, quantity=20, 
+                   description='LED desk lamp with built-in wireless charging pad'),
+            Product(name='Stainless Steel Water Bottle', category='Home', price=24.99, quantity=60, 
+                   description='Insulated stainless steel water bottle, keeps drinks cold for 24 hours'),
+        ]
+        
+        for product in sample_products:
+            db.session.add(product)
+        
+        db.session.flush()  # Get product IDs
+        
+        # Create sample orders
+        print("🛒 Creating sample orders...")
+        sample_orders_data = [
+            {
+                'order_id': 'ORD202401001',
+                'customer_name': 'John Smith',
+                'customer_email': 'john.smith@email.com',
+                'customer_phone': '+1-555-0101',
+                'order_date': datetime(2024, 1, 15),
+                'amount': 3749.98,
+                'status': 'Delivered',
+                'tracking_number': 'TRK789456123',
+                'shipping_address': '123 Main Street, Apt 4B\nNew York, NY 10001\nUnited States',
+                'notes': 'Customer requested signature confirmation',
+                'items': [
+                    {'product_id': 1, 'quantity': 1},  # MacBook Pro 16"
+                    {'product_id': 5, 'quantity': 1}   # iPhone 15 Pro
+                ]
+            },
+            {
+                'order_id': 'ORD202401002', 
+                'customer_name': 'Sarah Johnson',
+                'customer_email': 'sarah.j@email.com',
+                'customer_phone': '+1-555-0102',
+                'order_date': datetime(2024, 1, 18),
+                'amount': 1099.99,
+                'status': 'Shipped',
+                'tracking_number': 'TRK789456124',
+                'shipping_address': '456 Oak Avenue\nLos Angeles, CA 90210\nUnited States',
+                'notes': 'Gift wrapping requested',
+                'items': [
+                    {'product_id': 3, 'quantity': 1}   # iPad Pro
+                ]
+            },
+            {
+                'order_id': 'ORD202401003',
+                'customer_name': 'Mike Wilson',
+                'customer_email': 'mike.wilson@email.com', 
+                'customer_phone': '+1-555-0103',
+                'order_date': datetime(2024, 1, 20),
+                'amount': 648.97,
+                'status': 'Processing',
+                'tracking_number': '',
+                'shipping_address': '789 Pine Road\nChicago, IL 60601\nUnited States',
+                'notes': 'Customer will pick up from store',
+                'items': [
+                    {'product_id': 6, 'quantity': 2},  # AirPods Pro
+                    {'product_id': 10, 'quantity': 1}   # Python Book
+                ]
+            },
+            {
+                'order_id': 'ORD202401004',
+                'customer_name': 'Emily Davis',
+                'customer_email': 'emily.davis@email.com',
+                'customer_phone': '+1-555-0104',
+                'order_date': datetime(2024, 1, 22),
+                'amount': 999.99,
+                'status': 'Pending',
+                'tracking_number': '',
+                'shipping_address': '321 Elm Street\nHouston, TX 77001\nUnited States',
+                'notes': 'Waiting for payment confirmation',
+                'items': [
+                    {'product_id': 4, 'quantity': 1}   # MacBook Air
+                ]
+            },
+            {
+                'order_id': 'ORD202401005',
+                'customer_name': 'Robert Brown',
+                'customer_email': 'robert.b@email.com',
+                'customer_phone': '+1-555-0105',
+                'order_date': datetime(2024, 1, 25),
+                'amount': 399.99,
+                'status': 'Delivered',
+                'tracking_number': 'TRK789456125',
+                'shipping_address': '654 Maple Drive\nPhoenix, AZ 85001\nUnited States',
+                'notes': 'Left at front door as requested',
+                'items': [
+                    {'product_id': 7, 'quantity': 1}   # Apple Watch
+                ]
+            }
+        ]
+        
+        for order_data in sample_orders_data:
+            order = Order(
+                order_id=order_data['order_id'],
+                customer_name=order_data['customer_name'],
+                customer_email=order_data['customer_email'],
+                customer_phone=order_data['customer_phone'],
+                order_date=order_data['order_date'],
+                amount=order_data['amount'],
+                status=order_data['status'],
+                tracking_number=order_data['tracking_number'],
+                shipping_address=order_data['shipping_address'],
+                notes=order_data['notes']
+            )
+            db.session.add(order)
+            db.session.flush()
+            
+            # Add order items and update product quantities
+            for item_data in order_data['items']:
+                product = Product.query.get(item_data['product_id'])
+                if product:
+                    order_item = OrderItem(
+                        order_id=order.id,
+                        product_id=item_data['product_id'],
+                        quantity=item_data['quantity'],
+                        unit_price=product.price
+                    )
+                    db.session.add(order_item)
+                    
+                    # Update product stock (only for delivered/processing orders)
+                    if order_data['status'] in ['Delivered', 'Shipped', 'Processing']:
+                        product.quantity -= item_data['quantity']
+        
+        # Create sample sales data
+        print("📈 Creating sample sales data...")
+        for product in sample_products[:10]:  # Only for first 10 products
+            for i in range(random.randint(3, 8)):
+                sale = Sale(
+                    product_id=product.id,
+                    quantity_sold=random.randint(1, 3),
+                    sale_price=product.price * random.uniform(0.85, 0.95),
+                    sale_date=datetime(2024, 1, random.randint(1, 31))
+                )
+                db.session.add(sale)
+        
+        # Commit everything
+        db.session.commit()
+        
+        print("\n✅ Database initialization complete!")
+        print("📊 Sample data created:")
+        print(f"   👤 Users: {User.query.count()}")
+        print(f"   📦 Products: {Product.query.count()}")
+        print(f"   🛒 Orders: {Order.query.count()}")
+        print(f"   📈 Sales: {Sale.query.count()}")
+        print(f"   📋 Order Items: {OrderItem.query.count()}")
+        
+        print("\n🔑 Demo credentials:")
+        print("   Email: demo@example.com")
+        print("   Password: password123")
 
 # ------------------------------------------------------------------------------
 # Configuration
@@ -81,74 +305,6 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-# ------------------------------------------------------------------------------
-# Database Initialization
-# ------------------------------------------------------------------------------
-
-def init_db():
-    """Initialize the database on first run."""
-    with app.app_context():
-        db.create_all()
-        
-        # Create a default user for testing
-        if not User.query.filter_by(email='demo@example.com').first():
-            default_user = User(
-                name='Demo User',
-                email='demo@example.com',
-                image_url='/static/images/default-avatar.png'
-            )
-            default_user.set_password('password123')
-            db.session.add(default_user)
-            db.session.commit()
-            
-            # Add sample products for demo
-            sample_products = [
-                Product(name='MacBook Pro 15"', category='Electronics', price=2499.99, quantity=15, description='High-performance laptop for professionals'),
-                Product(name='iMac Pro 2019', category='Electronics', price=4999.99, quantity=8, description='All-in-one desktop computer'),
-                Product(name='iPad Pro with Apple Pencil', category='Electronics', price=1299.99, quantity=25, description='Professional tablet with stylus'),
-                Product(name='MacBook Pro 13"', category='Electronics', price=1799.99, quantity=20, description='Compact professional laptop'),
-                Product(name='iPhone 14 Pro', category='Electronics', price=999.99, quantity=50, description='Latest smartphone with advanced camera'),
-                Product(name='AirPods Pro', category='Electronics', price=249.99, quantity=75, description='Wireless noise-cancelling earbuds'),
-                Product(name='Apple Watch Series 8', category='Electronics', price=399.99, quantity=30, description='Advanced smartwatch with health tracking'),
-                Product(name='Gaming Laptop', category='Electronics', price=1299.99, quantity=8, description='High-performance gaming laptop with RGB keyboard'),
-                Product(name='Cotton T-Shirt', category='Clothing', price=24.99, quantity=45, description='Comfortable 100% cotton t-shirt'),
-                Product(name='Python Programming Book', category='Books', price=39.99, quantity=25, description='Learn Python programming from scratch'),
-            ]
-            
-            for product in sample_products:
-                db.session.add(product)
-            
-            # Add sample orders
-            sample_orders = [
-                Order(order_id='#2018078', customer_name='Brentia Hoyas', order_date=datetime(2019, 8, 21), amount=8216.00, status='Delivered', tracking_number='DCRUY'),
-                Order(order_id='#2018078', customer_name='Ted Holder', order_date=datetime(2019, 6, 24), amount=5456.00, status='Checkback', tracking_number='JHKKL'),
-                Order(order_id='#2018083', customer_name='Share W&C', order_date=datetime(2019, 8, 29), amount=5654.00, status='Delivered', tracking_number='KJKQ'),
-                Order(order_id='#2018084', customer_name='Duelal Mask', order_date=datetime(2019, 12, 10), amount=5554.00, status='Pending', tracking_number='BOJKL'),
-                Order(order_id='#2018085', customer_name='Earth Mujian', order_date=datetime(2019, 11, 21), amount=5624.00, status='Delivered', tracking_number='WKUX'),
-            ]
-            
-            for order in sample_orders:
-                db.session.add(order)
-            
-            # Add sample sales data
-            for product in sample_products[:8]:  # Only add sales for first 8 products
-                for i in range(random.randint(5, 15)):
-                    sale = Sale(
-                        product_id=product.id,
-                        quantity_sold=random.randint(1, 3),
-                        sale_price=product.price * random.uniform(0.85, 0.95),
-                        sale_date=datetime.utcnow() - timedelta(days=random.randint(1, 180))
-                    )
-                    db.session.add(sale)
-            
-            db.session.commit()
-        
-        print("Database initialized successfully!")
-        print("Tables created: users, products, sales, orders")
-
-# Create tables if not exist
-init_db()
 
 # ------------------------------------------------------------------------------
 # Helper Functions
@@ -169,15 +325,15 @@ def get_dashboard_data():
     total_stock = sum(p.quantity for p in products)
     out_of_stock = len([p for p in products if p.quantity == 0])
     
-    # Sales data
-    sales = Sale.query.all()
-    total_orders = len(sales)
-    total_revenue = sum(sale.quantity_sold * sale.sale_price for sale in sales)
+    # Sales data - now using Order model
+    orders = Order.query.all()
+    total_orders = len(orders)
+    total_revenue = sum(order.amount for order in orders)
     
     # Customer count
     total_customers = User.query.count()
     
-    # Recent orders
+    # Recent orders - using the new Order model
     recent_orders = Order.query.order_by(Order.order_date.desc()).limit(5).all()
     
     # Category distribution
@@ -187,12 +343,12 @@ def get_dashboard_data():
             categories[product.category] = 0
         categories[product.category] += 1
     
-    # Product performance data (based on sales)
+    # Product performance data (based on order items)
     product_performance = []
     top_products = db.session.query(
         Product.name,
-        db.func.sum(Sale.quantity_sold).label('total_sold')
-    ).join(Sale).group_by(Product.id).order_by(db.func.sum(Sale.quantity_sold).desc()).limit(4).all()
+        db.func.sum(OrderItem.quantity).label('total_sold')
+    ).join(OrderItem).group_by(Product.id).order_by(db.func.sum(OrderItem.quantity).desc()).limit(4).all()
     
     if top_products:
         max_sales = max([p.total_sold for p in top_products]) if top_products else 1
@@ -206,10 +362,10 @@ def get_dashboard_data():
     
     # Fill with default data if not enough products
     default_products = [
-        {'name': 'MacBook Pro 15"', 'percentage': 49},
-        {'name': 'iMac Pro 2019', 'percentage': 19},
-        {'name': 'iPad Pro with Apple Pencil', 'percentage': 29},
-        {'name': 'MacBook Pro 13"', 'percentage': 56}
+        {'name': 'MacBook Pro 16"', 'percentage': 49},
+        {'name': 'iMac 24"', 'percentage': 19},
+        {'name': 'iPad Pro 12.9"', 'percentage': 29},
+        {'name': 'MacBook Air 13"', 'percentage': 56}
     ]
     
     while len(product_performance) < 4:
@@ -222,17 +378,37 @@ def get_dashboard_data():
         {'type': 'Newsletter', 'percentage': 45}
     ]
     
-    # Delivery statistics
-    delivery_stats = [
-        {'status': 'Pending', 'percentage': 23},
-        {'status': 'In Transit', 'percentage': 45},
-        {'status': 'Delivered', 'percentage': 32}
-    ]
+    # Delivery statistics based on actual order status
+    status_counts = db.session.query(
+        Order.status,
+        db.func.count(Order.id).label('count')
+    ).group_by(Order.status).all()
     
-    # Monthly revenue data
+    total_order_count = sum(count for status, count in status_counts)
+    delivery_stats = []
+    for status, count in status_counts:
+        percentage = int((count / total_order_count) * 100) if total_order_count > 0 else 0
+        delivery_stats.append({
+            'status': status,
+            'percentage': percentage
+        })
+    
+    # Monthly revenue data based on actual orders
+    current_year = datetime.now().year
+    monthly_revenue = [0] * 12
+    
+    orders_this_year = Order.query.filter(
+        db.extract('year', Order.order_date) == current_year
+    ).all()
+    
+    for order in orders_this_year:
+        month = order.order_date.month - 1  # Convert to 0-based index
+        if 0 <= month < 12:
+            monthly_revenue[month] += order.amount
+    
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    income_data = [12000, 19000, 15000, 25000, 22000, 30000, 28000, 32000, 30000, 35000, 33000, 38000]
-    expense_data = [8000, 12000, 10000, 18000, 15000, 22000, 20000, 25000, 23000, 28000, 26000, 30000]
+    income_data = monthly_revenue
+    expense_data = [revenue * 0.6 for revenue in monthly_revenue]  # Estimate expenses as 60% of revenue
     
     return {
         'products': products[:5],  # Only send first 5 products for recent activities
@@ -251,19 +427,6 @@ def get_dashboard_data():
         'income_data': income_data,
         'expense_data': expense_data
     }
-
-def reset_database():
-    """Delete old DB and recreate tables."""
-    db_path = os.path.join(os.path.dirname(__file__), 'inventory_new.db')
-    if os.path.exists(db_path):
-        os.remove(db_path)
-        print("Old database deleted.")
-   
-    with app.app_context():
-        db.create_all()
-        print("New database created with updated schema.")
-   
-    print("Database reset complete!")
 
 # ------------------------------------------------------------------------------
 # Routes
@@ -326,54 +489,6 @@ def logout():
     flash('Logged out successfully', 'success')
     return redirect(url_for('login'))
 
-# ------------------------- Profile Image Upload --------------------------------
-
-@app.route('/upload-profile-image', methods=['POST'])
-def upload_profile_image():
-    if 'user_id' not in session:
-        return jsonify({'success': False, 'message': 'Not authenticated'})
-    
-    if 'profileImage' not in request.files:
-        return jsonify({'success': False, 'message': 'No file selected'})
-    
-    file = request.files['profileImage']
-    
-    if file.filename == '':
-        return jsonify({'success': False, 'message': 'No file selected'})
-    
-    if file and allowed_file(file.filename):
-        # Check file size
-        file.seek(0, os.SEEK_END)
-        file_length = file.tell()
-        file.seek(0, 0)  # Reset file pointer
-        
-        if file_length > MAX_FILE_SIZE:
-            return jsonify({'success': False, 'message': 'File too large. Max 5MB allowed.'})
-        
-        # Create upload directory if it doesn't exist
-        if not os.path.exists(UPLOAD_FOLDER):
-            os.makedirs(UPLOAD_FOLDER)
-        
-        # Generate a unique filename
-        filename = secure_filename(file.filename)
-        unique_filename = f"{session['user_id']}_{filename}"
-        filepath = os.path.join(UPLOAD_FOLDER, unique_filename)
-        
-        # Save the file
-        file.save(filepath)
-        
-        # Update user's profile image in database
-        user = User.query.get(session['user_id'])
-        if user:
-            image_url = f'/{UPLOAD_FOLDER}/{unique_filename}'
-            user.image_url = image_url
-            session['user_image'] = image_url
-            db.session.commit()
-            
-            return jsonify({'success': True, 'imageUrl': image_url})
-    
-    return jsonify({'success': False, 'message': 'Invalid file type'})
-
 # ------------------------- Dashboard -----------------------------------------
 
 @app.route('/dashboard')
@@ -382,8 +497,152 @@ def dashboard():
         return redirect(url_for('login'))
    
     dashboard_data = get_dashboard_data()
-    
     return render_template('dashboard.html', **dashboard_data)
+
+# ------------------------- Order Management ---------------------------------
+
+@app.route('/orders')
+def orders():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+   
+    orders_list = Order.query.order_by(Order.order_date.desc()).all()
+    return render_template('orders.html', orders=orders_list)
+
+@app.route('/create_order', methods=['GET', 'POST'])
+def create_order():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+   
+    products = Product.query.all()
+    
+    if request.method == 'POST':
+        try:
+            # Generate unique order ID
+            order_id = f"ORD{datetime.now().strftime('%Y%m%d%H%M%S')}"
+            
+            # Create order
+            new_order = Order(
+                order_id=order_id,
+                customer_name=request.form['customer_name'],
+                customer_email=request.form.get('customer_email', ''),
+                customer_phone=request.form.get('customer_phone', ''),
+                order_date=datetime.strptime(request.form['order_date'], '%Y-%m-%d'),
+                amount=0,  # Will calculate from items
+                status=request.form['status'],
+                tracking_number=request.form.get('tracking_number', ''),
+                shipping_address=request.form.get('shipping_address', ''),
+                notes=request.form.get('notes', '')
+            )
+            
+            db.session.add(new_order)
+            db.session.flush()  # Get the order ID
+            
+            # Process order items
+            total_amount = 0
+            product_ids = request.form.getlist('product_id[]')
+            quantities = request.form.getlist('quantity[]')
+            
+            for i, (product_id, quantity_str) in enumerate(zip(product_ids, quantities)):
+                if not product_id or not quantity_str:
+                    continue
+                    
+                product = Product.query.get(int(product_id))
+                quantity = int(quantity_str)
+                
+                if product and quantity > 0:
+                    # Check stock availability
+                    if product.quantity < quantity:
+                        flash(f'Not enough stock for {product.name}. Available: {product.quantity}', 'error')
+                        db.session.rollback()
+                        return render_template('add_order.html', products=products)
+                    
+                    # Create order item
+                    order_item = OrderItem(
+                        order_id=new_order.id,
+                        product_id=product.id,
+                        quantity=quantity,
+                        unit_price=product.price
+                    )
+                    
+                    db.session.add(order_item)
+                    total_amount += product.price * quantity
+                    
+                    # Update product stock
+                    product.quantity -= quantity
+            
+            # Update order total amount
+            new_order.amount = total_amount
+            
+            db.session.commit()
+            flash(f'Order {order_id} created successfully!', 'success')
+            return redirect(url_for('orders'))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error creating order: {str(e)}', 'error')
+    
+    return render_template('add_order.html', products=products, datetime=datetime)
+
+@app.route('/edit_order/<int:order_id>', methods=['GET', 'POST'])
+def edit_order(order_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+   
+    order = Order.query.get_or_404(order_id)
+    products = Product.query.all()
+    
+    if request.method == 'POST':
+        try:
+            # Update order details
+            order.customer_name = request.form['customer_name']
+            order.customer_email = request.form.get('customer_email', '')
+            order.customer_phone = request.form.get('customer_phone', '')
+            order.order_date = datetime.strptime(request.form['order_date'], '%Y-%m-%d')
+            order.status = request.form['status']
+            order.tracking_number = request.form.get('tracking_number', '')
+            order.shipping_address = request.form.get('shipping_address', '')
+            order.notes = request.form.get('notes', '')
+            
+            db.session.commit()
+            flash('Order updated successfully!', 'success')
+            return redirect(url_for('orders'))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating order: {str(e)}', 'error')
+    
+    return render_template('edit_order.html', order=order, products=products)
+
+@app.route('/delete_order/<int:order_id>', methods=['POST'])
+def delete_order(order_id):
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Not authenticated'})
+   
+    try:
+        order = Order.query.get_or_404(order_id)
+        order_id_str = order.order_id
+        
+        # Restore product quantities
+        for item in order.items:
+            product = Product.query.get(item.product_id)
+            if product:
+                product.quantity += item.quantity
+        
+        db.session.delete(order)
+        db.session.commit()
+        return jsonify({'success': True, 'message': f'Order {order_id_str} deleted successfully'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': f'Error deleting order: {str(e)}'})
+
+@app.route('/order_details/<int:order_id>')
+def order_details(order_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+   
+    order = Order.query.get_or_404(order_id)
+    return render_template('order_details.html', order=order)
 
 # ------------------------- Product Management ---------------------------------
 
@@ -459,27 +718,26 @@ def inventory():
 
 @app.route('/edit_product/<int:product_id>', methods=['GET', 'POST'])
 def edit_product(product_id):
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-   
     product = Product.query.get_or_404(product_id)
-    existing_categories = get_existing_categories()
-   
+    
+    # Get unique categories for the dropdown
+    existing_categories = db.session.query(Product.category).distinct().all()
+    existing_categories = [cat[0] for cat in existing_categories]
+    
     if request.method == 'POST':
-        try:
-            product.name = request.form['name']
-            product.category = request.form['category']
-            product.price = float(request.form['price'])
-            product.quantity = int(request.form['quantity'])
-            product.description = request.form.get('description', '')
-           
-            db.session.commit()
-            flash('Product updated successfully!', 'success')
-            return redirect(url_for('inventory'))
-        except Exception as e:
-            db.session.rollback()
-            flash('Error updating product.', 'error')
-   
+        # Update product logic here
+        product.name = request.form['name']
+        product.description = request.form['description']
+        product.category = request.form['category']
+        product.price = float(request.form['price'])
+        product.quantity = int(request.form['quantity'])
+        product.supplier = request.form.get('supplier', '')
+        product.sku = request.form.get('sku', '')
+        
+        db.session.commit()
+        flash('Product updated successfully!', 'success')
+        return redirect(url_for('inventory'))
+    
     return render_template('edit_product.html', product=product, existing_categories=existing_categories)
 
 @app.route('/delete_product/<int:product_id>', methods=['POST'])
@@ -499,7 +757,6 @@ def delete_product(product_id):
 
 # ------------------------- Reports -------------------------------------------
 
-# ... (keep all the imports and models the same)
 @app.route('/report')
 def report():
     if 'user_id' not in session:
@@ -564,30 +821,41 @@ def report():
         low_stock_stats=low_stock_stats,
         highest_value_category=highest_value_category
     )
-    # ... rest of your report code ...
-# ... (keep the rest of the routes the same)
-# ------------------------- Database Reset ------------------------------------
 
 @app.route('/reset-db')
 def reset_db_route():
     """Reset the database to a clean state."""
     try:
-        reset_database()
-        init_db()  # Reinitialize with sample data
+        init_database()
         flash('Database has been successfully reset.', 'success')
     except Exception as e:
         flash(f'Error resetting database: {e}', 'danger')
     return redirect(url_for('dashboard'))
 
+# ------------------------- Recent Orders Page --------------------------------
 
+@app.route('/recent-orders')
+def recent_orders():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    orders_data = Order.query.order_by(Order.order_date.desc()).all()
+    return render_template('recent_orders.html', orders=orders_data)
 
+# ------------------------- Add Order Page ------------------------------------
+
+@app.route('/add-order')
+def add_order():
+    return render_template('add_order.html')
 # ------------------------------------------------------------------------------
 # Run App
 # ------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    print("Starting Inventory Management System...")
-    print("Database: inventory_new.db")
-    print("Access the application at: http://localhost:5000")
-    print("Demo credentials: demo@example.com / password123")
+    # Initialize database
+    print("🚀 Starting Inventory Management System...")
+    init_database()
+    
+    print("🌐 Access the application at: http://localhost:5000")
+    print("🔑 Demo credentials: demo@example.com / password123")
     app.run(debug=True)
