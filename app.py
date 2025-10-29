@@ -27,7 +27,7 @@ class User(db.Model):
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
-    image_url = db.Column(db.String(200), default='/static/images/default-avatar.png')
+    image_url = db.Column(db.String(200), default=None)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def set_password(self, password):
@@ -35,6 +35,7 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
 
 class Product(db.Model):
     __tablename__ = 'products'
@@ -48,6 +49,7 @@ class Product(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+
 class OrderItem(db.Model):
     __tablename__ = 'order_items'
     
@@ -58,6 +60,7 @@ class OrderItem(db.Model):
     unit_price = db.Column(db.Float, nullable=False)
     
     product = db.relationship('Product', backref='order_items')
+
 
 class Order(db.Model):
     __tablename__ = 'orders'
@@ -78,6 +81,7 @@ class Order(db.Model):
     
     items = db.relationship('OrderItem', backref='order', cascade='all, delete-orphan')
 
+
 class Sale(db.Model):
     __tablename__ = 'sales'
    
@@ -88,6 +92,7 @@ class Sale(db.Model):
     sale_date = db.Column(db.DateTime, default=datetime.utcnow)
     
     product = db.relationship('Product', backref='sales')
+
 
 # ------------------------------------------------------------------------------
 # Database Initialization
@@ -108,7 +113,7 @@ def init_database():
         default_user = User(
             name='Demo User',
             email='demo@example.com',
-            image_url='/static/images/default-avatar.png'
+            image_url=None
         )
         default_user.set_password('password123')
         db.session.add(default_user)
@@ -708,13 +713,19 @@ def add_product():
    
     return render_template('add_product.html', existing_categories=existing_categories)
 
+
 @app.route('/inventory')
 def inventory():
     if 'user_id' not in session:
         return redirect(url_for('login'))
    
     products = Product.query.order_by(Product.created_at.desc()).all()
-    return render_template('inventory.html', products=products)
+    # Get unique categories for the filter dropdown
+    categories = db.session.query(Product.category).distinct().all()
+    categories = [category[0] for category in categories if category[0]]  # Remove any None values
+    
+    return render_template('inventory.html', products=products, categories=categories)
+
 
 @app.route('/edit_product/<int:product_id>', methods=['GET', 'POST'])
 def edit_product(product_id):
@@ -731,8 +742,6 @@ def edit_product(product_id):
         product.category = request.form['category']
         product.price = float(request.form['price'])
         product.quantity = int(request.form['quantity'])
-        product.supplier = request.form.get('supplier', '')
-        product.sku = request.form.get('sku', '')
         
         db.session.commit()
         flash('Product updated successfully!', 'success')
@@ -748,12 +757,27 @@ def delete_product(product_id):
     try:
         product = Product.query.get_or_404(product_id)
         product_name = product.name
+        
+        # Delete related records first to avoid foreign key constraints
+        OrderItem.query.filter_by(product_id=product_id).delete()
+        Sale.query.filter_by(product_id=product_id).delete()
+        
+        # Now delete the product
         db.session.delete(product)
         db.session.commit()
-        return jsonify({'success': True, 'message': f'Product "{product_name}" deleted successfully'})
+        
+        return jsonify({
+            'success': True, 
+            'message': f'Product "{product_name}" deleted successfully'
+        })
+        
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': 'Error deleting product'})
+        print(f"Error deleting product: {str(e)}")
+        return jsonify({
+            'success': False, 
+            'message': f'Error deleting product: {str(e)}'
+        })
 
 # ------------------------- Reports -------------------------------------------
 
@@ -847,6 +871,7 @@ def recent_orders():
 @app.route('/add-order')
 def add_order():
     return render_template('add_order.html')
+
 # ------------------------------------------------------------------------------
 # Run App
 # ------------------------------------------------------------------------------
