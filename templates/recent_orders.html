@@ -11,7 +11,7 @@
             <p class="text-gray-600 mt-1">View and manage all customer orders</p>
         </div>
         <div class="flex space-x-4">
-            <a href="{{ url_for('add_order') }}" 
+            <a href="{{ url_for('create_order') }}" 
                class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
                 <i class="fas fa-plus mr-2"></i>
                 New Order
@@ -25,7 +25,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500">Total Orders</p>
-                    <p class="text-2xl font-bold text-gray-900">142</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ orders|length }}</p>
                 </div>
                 <div class="bg-blue-100 p-3 rounded-lg">
                     <i class="fas fa-shopping-cart text-blue-600 text-xl"></i>
@@ -36,7 +36,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500">Pending</p>
-                    <p class="text-2xl font-bold text-gray-900">24</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ orders|selectattr('status', 'equalto', 'Pending')|list|length }}</p>
                 </div>
                 <div class="bg-yellow-100 p-3 rounded-lg">
                     <i class="fas fa-clock text-yellow-600 text-xl"></i>
@@ -47,7 +47,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500">Processing</p>
-                    <p class="text-2xl font-bold text-gray-900">18</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ orders|selectattr('status', 'equalto', 'Processing')|list|length }}</p>
                 </div>
                 <div class="bg-purple-100 p-3 rounded-lg">
                     <i class="fas fa-cog text-purple-600 text-xl"></i>
@@ -58,7 +58,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-gray-500">Delivered</p>
-                    <p class="text-2xl font-bold text-gray-900">89</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ orders|selectattr('status', 'equalto', 'Delivered')|list|length }}</p>
                 </div>
                 <div class="bg-green-100 p-3 rounded-lg">
                     <i class="fas fa-check-circle text-green-600 text-xl"></i>
@@ -86,7 +86,7 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     {% for order in orders %}
-                    <tr class="hover:bg-gray-50 transition-colors" id="order-{{ order.order_id }}">
+                    <tr class="hover:bg-gray-50 transition-colors" id="order-{{ order.id }}">
                         <td class="px-6 py-4">
                             <div class="font-medium text-gray-900">{{ order.order_id }}</div>
                         </td>
@@ -94,7 +94,7 @@
                             <div class="font-medium text-gray-900">{{ order.customer_name }}</div>
                             <div class="text-sm text-gray-500">{{ order.customer_email }}</div>
                         </td>
-                        <td class="px-6 py-4 text-gray-900">{{ order.date }}</td>
+                        <td class="px-6 py-4 text-gray-900">{{ order.order_date.strftime('%b %d, %Y') }}</td>
                         <td class="px-6 py-4">
                             <div class="font-semibold text-gray-900">${{ "%.2f"|format(order.amount) }}</div>
                         </td>
@@ -111,25 +111,39 @@
                         <td class="px-6 py-4">
                             <div class="flex space-x-2">
                                 <!-- View Button -->
-                                <button onclick="viewOrder('{{ order.order_id }}')" 
+                                <button onclick="viewOrderDetails({{ order.id }})" 
                                         class="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg transition-colors"
                                         title="View Order Details">
                                     <i class="fas fa-eye"></i>
                                 </button>
                                 
                                 <!-- Edit Button -->
-                                <button onclick="openEditModal('{{ order.order_id }}')" 
+                                <button onclick="openEditModal('{{ order.order_id }}', {{ order.id }})" 
                                         class="p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors"
                                         title="Edit Order">
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 
                                 <!-- Delete Button -->
-                                <button onclick="deleteOrder('{{ order.order_id }}', '{{ order.customer_name }}')" 
+                                <button onclick="deleteOrder({{ order.id }}, '{{ order.order_id }}', '{{ order.customer_name }}')" 
                                         class="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-colors"
                                         title="Delete Order">
                                     <i class="fas fa-trash"></i>
                                 </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center">
+                            <div class="flex flex-col items-center justify-center">
+                                <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">No orders found</h3>
+                                <p class="text-gray-500 mb-4">Get started by creating your first order.</p>
+                                <a href="{{ url_for('create_order') }}" 
+                                   class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                                    <i class="fas fa-plus mr-2"></i>Create Your First Order
+                                </a>
                             </div>
                         </td>
                     </tr>
@@ -140,7 +154,7 @@
         <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
             <div class="flex justify-between items-center">
                 <div class="text-sm text-gray-500">
-                    Showing 1 to {{ orders|length }} of 142 orders
+                    Showing 1 to {{ orders|length }} of {{ orders|length }} orders
                 </div>
                 <div class="flex space-x-2">
                     <button class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
@@ -293,33 +307,52 @@
 {% block scripts %}
 <script>
     let currentOrderId = null;
-    let currentEditingOrder = null;
+    let currentOrderRow = null;
+    let currentEditingOrderId = null;
+
+    // View Order Function
+    function viewOrderDetails(orderId) {
+        // Redirect to order details page
+        window.location.href = `/order_details/${orderId}`;
+    }
 
     // Edit Order Functions
-    function openEditModal(orderId) {
-        currentEditingOrder = orderId;
+    function openEditModal(orderNumber, orderId) {
+        currentEditingOrderId = orderId;
         
-        // Get order data (in real app, this would be an API call)
-        const orderData = getOrderData(orderId);
-        
-        // Populate form fields
-        document.getElementById('editCustomerName').value = orderData.customer_name;
-        document.getElementById('editCustomerEmail').value = orderData.customer_email;
-        document.getElementById('editOrderDate').value = orderData.order_date;
-        document.getElementById('editOrderAmount').value = orderData.amount;
-        document.getElementById('editOrderStatus').value = orderData.status;
-        
-        // Show modal
-        document.getElementById('editOrderModal').classList.remove('hidden');
+        // Get order data from the table row
+        const orderRow = document.getElementById(`order-${orderId}`);
+        if (orderRow) {
+            const customerName = orderRow.cells[1].querySelector('.font-medium').textContent;
+            const customerEmail = orderRow.cells[1].querySelector('.text-sm').textContent;
+            const orderDate = orderRow.cells[2].textContent;
+            const orderAmount = orderRow.cells[3].querySelector('.font-semibold').textContent.replace('$', '');
+            const orderStatus = orderRow.cells[4].querySelector('span').textContent;
+            
+            // Populate form fields
+            document.getElementById('editCustomerName').value = customerName;
+            document.getElementById('editCustomerEmail').value = customerEmail;
+            
+            // Format date for input field
+            const date = new Date(orderDate);
+            const formattedDate = date.toISOString().split('T')[0];
+            document.getElementById('editOrderDate').value = formattedDate;
+            
+            document.getElementById('editOrderAmount').value = orderAmount;
+            document.getElementById('editOrderStatus').value = orderStatus;
+            
+            // Show modal
+            document.getElementById('editOrderModal').classList.remove('hidden');
+        }
     }
 
     function closeEditModal() {
         document.getElementById('editOrderModal').classList.add('hidden');
-        currentEditingOrder = null;
+        currentEditingOrderId = null;
     }
 
     function updateOrder() {
-        if (!currentEditingOrder) return;
+        if (!currentEditingOrderId) return;
 
         const form = document.getElementById('editOrderForm');
         if (!form.checkValidity()) {
@@ -333,91 +366,64 @@
         updateBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...';
         updateBtn.disabled = true;
 
-        // Simulate API call
+        // Get updated values
+        const customerName = document.getElementById('editCustomerName').value;
+        const customerEmail = document.getElementById('editCustomerEmail').value;
+        const orderDate = document.getElementById('editOrderDate').value;
+        const orderAmount = document.getElementById('editOrderAmount').value;
+        const orderStatus = document.getElementById('editOrderStatus').value;
+
+        // Update the table row with new data
+        const orderRow = document.getElementById(`order-${currentEditingOrderId}`);
+        if (orderRow) {
+            orderRow.cells[1].innerHTML = `
+                <div class="font-medium text-gray-900">${customerName}</div>
+                <div class="text-sm text-gray-500">${customerEmail}</div>
+            `;
+            
+            // Format date for display
+            const displayDate = new Date(orderDate).toLocaleDateString('en-US', { 
+                month: 'short', day: 'numeric', year: 'numeric' 
+            });
+            orderRow.cells[2].textContent = displayDate;
+            
+            orderRow.cells[3].innerHTML = `<div class="font-semibold text-gray-900">$${parseFloat(orderAmount).toFixed(2)}</div>`;
+            
+            // Update status with appropriate color
+            const statusClass = orderStatus === 'Delivered' ? 'bg-green-100 text-green-800' :
+                              orderStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                              orderStatus === 'Processing' ? 'bg-purple-100 text-purple-800' :
+                              orderStatus === 'Shipped' ? 'bg-blue-100 text-blue-800' :
+                              'bg-gray-100 text-gray-800';
+            
+            orderRow.cells[4].innerHTML = `
+                <span class="px-3 py-1 text-sm font-medium rounded-full ${statusClass}">
+                    ${orderStatus}
+                </span>
+            `;
+        }
+
+        // Simulate API call delay
         setTimeout(() => {
-            // Update the table row with new data
-            const customerName = document.getElementById('editCustomerName').value;
-            const customerEmail = document.getElementById('editCustomerEmail').value;
-            const orderDate = document.getElementById('editOrderDate').value;
-            const orderAmount = document.getElementById('editOrderAmount').value;
-            const orderStatus = document.getElementById('editOrderStatus').value;
-
-            const orderRow = document.getElementById(`order-${currentEditingOrder}`);
-            if (orderRow) {
-                orderRow.cells[1].innerHTML = `
-                    <div class="font-medium text-gray-900">${customerName}</div>
-                    <div class="text-sm text-gray-500">${customerEmail}</div>
-                `;
-                orderRow.cells[2].textContent = new Date(orderDate).toLocaleDateString('en-US', { 
-                    month: 'short', day: 'numeric', year: 'numeric' 
-                });
-                orderRow.cells[3].innerHTML = `<div class="font-semibold text-gray-900">$${parseFloat(orderAmount).toFixed(2)}</div>`;
-                orderRow.cells[4].innerHTML = `
-                    <span class="px-3 py-1 text-sm font-medium rounded-full 
-                        ${orderStatus === 'Delivered' ? 'bg-green-100 text-green-800' :
-                          orderStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                          orderStatus === 'Processing' ? 'bg-purple-100 text-purple-800' :
-                          orderStatus === 'Shipped' ? 'bg-blue-100 text-blue-800' :
-                          'bg-gray-100 text-gray-800'}">
-                        ${orderStatus}
-                    </span>
-                `;
-            }
-
             closeEditModal();
-            showNotification(`Order ${currentEditingOrder} updated successfully!`, 'success');
+            showNotification(`Order updated successfully!`, 'success');
+            
+            // Update stats (reload page to get accurate counts)
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
             
             updateBtn.innerHTML = originalText;
             updateBtn.disabled = false;
         }, 1500);
     }
 
-    // Helper function to get order data (simulated)
-    function getOrderData(orderId) {
-        const orders = {
-            'ORD-001': {
-                customer_name: 'Robert Brown',
-                customer_email: 'robert@example.com',
-                order_date: '2024-01-25',
-                amount: 399.99,
-                status: 'Delivered'
-            },
-            'ORD-002': {
-                customer_name: 'Emily Davis',
-                customer_email: 'emily@example.com',
-                order_date: '2024-01-22',
-                amount: 999.99,
-                status: 'Pending'
-            },
-            'ORD-003': {
-                customer_name: 'Mike Wilson',
-                customer_email: 'mike@example.com',
-                order_date: '2024-01-20',
-                amount: 648.97,
-                status: 'Processing'
-            },
-            'ORD-004': {
-                customer_name: 'Sarah Johnson',
-                customer_email: 'sarah@example.com',
-                order_date: '2024-01-18',
-                amount: 1099.99,
-                status: 'Shipped'
-            },
-            'ORD-005': {
-                customer_name: 'John Smith',
-                customer_email: 'johns@example.com',
-                order_date: '2024-01-15',
-                amount: 3749.98,
-                status: 'Delivered'
-            }
-        };
-        return orders[orderId] || orders['ORD-001'];
-    }
-
     // Delete Order Functions
-    function deleteOrder(orderId, customerName) {
+    function deleteOrder(orderId, orderNumber, customerName) {
         currentOrderId = orderId;
-        document.getElementById('deleteOrderId').textContent = orderId;
+        currentOrderRow = document.getElementById(`order-${orderId}`);
+        
+        document.getElementById('deleteOrderId').textContent = orderNumber;
         document.getElementById('deleteCustomerName').textContent = customerName;
         document.getElementById('deleteModal').classList.remove('hidden');
     }
@@ -425,6 +431,7 @@
     function closeDeleteModal() {
         document.getElementById('deleteModal').classList.add('hidden');
         currentOrderId = null;
+        currentOrderRow = null;
     }
 
     function confirmDelete() {
@@ -435,29 +442,44 @@
             deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Deleting...';
             deleteBtn.disabled = true;
 
-            setTimeout(() => {
-                // Remove the order from the table
-                const orderRow = document.getElementById(`order-${currentOrderId}`);
-                if (orderRow) {
-                    orderRow.style.opacity = '0';
-                    orderRow.style.transition = 'opacity 0.3s ease';
-                    setTimeout(() => {
-                        orderRow.remove();
-                        showNotification(`Order ${currentOrderId} deleted successfully`, 'success');
-                    }, 300);
+            // Make API call to delete order
+            fetch(`/delete_order/${currentOrderId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
                 }
-
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove the order from the table with animation
+                    if (currentOrderRow) {
+                        currentOrderRow.style.opacity = '0';
+                        currentOrderRow.style.transition = 'opacity 0.3s ease';
+                        setTimeout(() => {
+                            currentOrderRow.remove();
+                            showNotification(data.message, 'success');
+                            
+                            // Update stats by reloading page
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+                        }, 300);
+                    }
+                } else {
+                    showNotification(data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error deleting order. Please try again.', 'error');
+            })
+            .finally(() => {
                 closeDeleteModal();
                 deleteBtn.innerHTML = originalText;
                 deleteBtn.disabled = false;
-            }, 1500);
+            });
         }
-    }
-
-    // View Order Function
-    function viewOrder(orderId) {
-        showNotification(`Viewing order ${orderId}`, 'success');
-        console.log(`View order: ${orderId}`);
     }
 
     // Show Notification

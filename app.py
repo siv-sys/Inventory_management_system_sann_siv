@@ -512,7 +512,7 @@ def orders():
         return redirect(url_for('login'))
    
     orders_list = Order.query.order_by(Order.order_date.desc()).all()
-    return render_template('orders.html', orders=orders_list)
+    return render_template('recent_orders.html', orders=orders_list)
 
 @app.route('/create_order', methods=['GET', 'POST'])
 def create_order():
@@ -595,7 +595,6 @@ def edit_order(order_id):
         return redirect(url_for('login'))
    
     order = Order.query.get_or_404(order_id)
-    products = Product.query.all()
     
     if request.method == 'POST':
         try:
@@ -617,7 +616,7 @@ def edit_order(order_id):
             db.session.rollback()
             flash(f'Error updating order: {str(e)}', 'error')
     
-    return render_template('edit_order.html', order=order, products=products)
+    return render_template('edit_order.html', order=order)
 
 @app.route('/delete_order/<int:order_id>', methods=['POST'])
 def delete_order(order_id):

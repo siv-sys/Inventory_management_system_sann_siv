@@ -3,14 +3,14 @@
 {% block title %}Add New Order - Inventory System{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
+<div class="min-h-screen bg-gray-50 py-8">
     <div class="max-w-6xl mx-auto px-4">
         <!-- Header Section -->
         <div class="mb-8">
-            <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-blue-100">
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-200">
                 <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                     <div class="flex items-center">
-                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 p-3 rounded-xl mr-4">
+                        <div class="bg-blue-600 p-3 rounded-lg mr-4">
                             <i class="fas fa-shopping-cart text-white text-2xl"></i>
                         </div>
                         <div>
@@ -19,239 +19,168 @@
                         </div>
                     </div>
                     <div class="flex space-x-3">
-                        <a href="{{ url_for('recent_orders') }}" 
-                           class="bg-white text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-50 transition-all duration-300 flex items-center border border-gray-200 shadow-sm hover:shadow-md">
+                        <a href="{{ url_for('orders') }}" 
+                           class="bg-white text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center border border-gray-300">
                             <i class="fas fa-arrow-left mr-2"></i>
                             Back to Orders
                         </a>
                     </div>
                 </div>
             </div>
-
-            <!-- Progress Steps -->
-            <div class="bg-white rounded-2xl shadow-lg p-6 border border-blue-100">
-                <div class="flex justify-center">
-                    <div class="flex items-center space-x-8">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold shadow-lg">
-                                1
-                            </div>
-                            <span class="ml-3 font-medium text-blue-600">Customer Info</span>
-                        </div>
-                        <div class="w-16 h-1 bg-blue-200"></div>
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-blue-200 text-blue-600 rounded-full flex items-center justify-center font-semibold">
-                                2
-                            </div>
-                            <span class="ml-3 font-medium text-gray-500">Order Details</span>
-                        </div>
-                        <div class="w-16 h-1 bg-blue-200"></div>
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-blue-200 text-blue-600 rounded-full flex items-center justify-center font-semibold">
-                                3
-                            </div>
-                            <span class="ml-3 font-medium text-gray-500">Products</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Order Form -->
-        <div class="bg-white rounded-2xl shadow-xl border border-blue-100 overflow-hidden">
-            <form id="orderForm" class="p-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <form id="orderForm" method="POST" action="{{ url_for('create_order') }}" class="p-6">
                 <!-- Customer Information -->
-                <div class="mb-12">
-                    <div class="flex items-center mb-6">
-                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-2 rounded-lg mr-3">
+                <div class="mb-8">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-blue-600 p-2 rounded-lg mr-3">
                             <i class="fas fa-user text-white text-lg"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-900">Customer Information</h2>
+                        <h2 class="text-xl font-bold text-gray-900">Customer Information</h2>
                     </div>
                     
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        <div class="space-y-6">
-                            <div class="form-group transform transition-all duration-300 hover:scale-[1.02]">
-                                <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                                    <i class="fas fa-user-circle text-blue-500 mr-2"></i>
-                                    Customer Name <span class="text-red-500 ml-1">*</span>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Customer Name <span class="text-red-500">*</span>
                                 </label>
-                                <input type="text" id="customerName" name="customerName" required
-                                       class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 bg-gray-50"
+                                <input type="text" name="customer_name" required
+                                       class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                        placeholder="Enter customer full name">
-                                <p class="text-xs text-red-500 mt-2 hidden" id="customerNameError">
-                                    <i class="fas fa-exclamation-circle mr-1"></i>Customer name is required
-                                </p>
                             </div>
 
-                            <div class="form-group transform transition-all duration-300 hover:scale-[1.02]">
-                                <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                                    <i class="fas fa-envelope text-blue-500 mr-2"></i>
-                                    Email Address <span class="text-red-500 ml-1">*</span>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Email Address
                                 </label>
-                                <input type="email" id="customerEmail" name="customerEmail" required
-                                       class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 bg-gray-50"
+                                <input type="email" name="customer_email"
+                                       class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                        placeholder="customer@example.com">
-                                <p class="text-xs text-red-500 mt-2 hidden" id="customerEmailError">
-                                    <i class="fas fa-exclamation-circle mr-1"></i>Valid email is required
-                                </p>
                             </div>
 
-                            <div class="form-group transform transition-all duration-300 hover:scale-[1.02]">
-                                <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                                    <i class="fas fa-phone text-blue-500 mr-2"></i>
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
                                     Phone Number
                                 </label>
-                                <input type="tel" id="customerPhone" name="customerPhone"
-                                       class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 bg-gray-50"
+                                <input type="tel" name="customer_phone"
+                                       class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                        placeholder="+1 (555) 123-4567">
                             </div>
                         </div>
 
-                        <div class="space-y-6">
-                            <div class="form-group transform transition-all duration-300 hover:scale-[1.02]">
-                                <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                                    <i class="fas fa-tag text-blue-500 mr-2"></i>
-                                    Customer Type
-                                </label>
-                                <select id="customerType" name="customerType"
-                                        class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 bg-gray-50 appearance-none cursor-pointer">
-                                    <option value="Regular">🟢 Regular Customer</option>
-                                    <option value="VIP">⭐ VIP Customer</option>
-                                    <option value="Wholesale">🏢 Wholesale</option>
-                                    <option value="First-time">👋 First-time Customer</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group transform transition-all duration-300 hover:scale-[1.02]">
-                                <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                                    <i class="fas fa-map-marker-alt text-blue-500 mr-2"></i>
+                        <div class="space-y-4">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
                                     Shipping Address
                                 </label>
-                                <textarea id="shippingAddress" name="shippingAddress" rows="3"
-                                          class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300 bg-gray-50 resize-none"
+                                <textarea name="shipping_address" rows="3"
+                                          class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
                                           placeholder="Enter complete shipping address..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Order Notes
+                                </label>
+                                <textarea name="notes" rows="3"
+                                          class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+                                          placeholder="Add any special instructions or notes for this order..."></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Order Details -->
-                <div class="mb-12">
-                    <div class="flex items-center mb-6">
-                        <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-2 rounded-lg mr-3">
+                <div class="mb-8">
+                    <div class="flex items-center mb-4">
+                        <div class="bg-purple-600 p-2 rounded-lg mr-3">
                             <i class="fas fa-clipboard-list text-white text-lg"></i>
                         </div>
-                        <h2 class="text-2xl font-bold text-gray-900">Order Details</h2>
+                        <h2 class="text-xl font-bold text-gray-900">Order Details</h2>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <div class="form-group transform transition-all duration-300 hover:scale-[1.02]">
-                            <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                                <i class="fas fa-calendar text-purple-500 mr-2"></i>
-                                Order Date <span class="text-red-500 ml-1">*</span>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Order Date <span class="text-red-500">*</span>
                             </label>
-                            <input type="date" id="orderDate" name="orderDate" required
-                                   class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-300 bg-gray-50">
+                            <input type="date" name="order_date" required
+                                   class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                         </div>
 
-                        <div class="form-group transform transition-all duration-300 hover:scale-[1.02]">
-                            <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                                <i class="fas fa-flag text-purple-500 mr-2"></i>
-                                Status <span class="text-red-500 ml-1">*</span>
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Status <span class="text-red-500">*</span>
                             </label>
-                            <select id="orderStatus" name="orderStatus" required
-                                    class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-300 bg-gray-50 appearance-none cursor-pointer">
-                                <option value="Pending" selected>🟡 Pending</option>
-                                <option value="Confirmed">🔵 Confirmed</option>
-                                <option value="Processing">🔄 Processing</option>
-                                <option value="Shipped">🚚 Shipped</option>
-                                <option value="Delivered">✅ Delivered</option>
-                                <option value="Cancelled">❌ Cancelled</option>
+                            <select name="status" required
+                                    class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none cursor-pointer">
+                                <option value="Pending" selected>Pending</option>
+                                <option value="Processing">Processing</option>
+                                <option value="Shipped">Shipped</option>
+                                <option value="Delivered">Delivered</option>
+                                <option value="Cancelled">Cancelled</option>
                             </select>
                         </div>
 
-                        <div class="form-group transform transition-all duration-300 hover:scale-[1.02]">
-                            <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                                <i class="fas fa-credit-card text-purple-500 mr-2"></i>
-                                Payment Method
+                        <div class="form-group">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Tracking Number
                             </label>
-                            <select id="paymentMethod" name="paymentMethod"
-                                    class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-300 bg-gray-50 appearance-none cursor-pointer">
-                                <option value="Credit Card">💳 Credit Card</option>
-                                <option value="PayPal">🔵 PayPal</option>
-                                <option value="Bank Transfer">🏦 Bank Transfer</option>
-                                <option value="Cash">💵 Cash</option>
-                                <option value="Other">🔶 Other</option>
-                            </select>
-                        </div>
-
-                        <div class="lg:col-span-3 form-group transform transition-all duration-300 hover:scale-[1.02]">
-                            <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                                <i class="fas fa-sticky-note text-purple-500 mr-2"></i>
-                                Order Notes
-                            </label>
-                            <textarea id="orderNotes" name="orderNotes" rows="3"
-                                      class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all duration-300 bg-gray-50 resize-none"
-                                      placeholder="Add any special instructions or notes for this order..."></textarea>
+                            <input type="text" name="tracking_number"
+                                   class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                   placeholder="Optional tracking number">
                         </div>
                     </div>
                 </div>
 
                 <!-- Products Section -->
-                <div class="mb-12">
-                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
+                <div class="mb-8">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
                         <div class="flex items-center">
-                            <div class="bg-gradient-to-r from-green-500 to-green-600 p-2 rounded-lg mr-3">
+                            <div class="bg-green-600 p-2 rounded-lg mr-3">
                                 <i class="fas fa-boxes text-white text-lg"></i>
                             </div>
-                            <h2 class="text-2xl font-bold text-gray-900">Order Items</h2>
+                            <h2 class="text-xl font-bold text-gray-900">Order Items</h2>
                         </div>
                         <button type="button" onclick="addProductRow()" 
-                                class="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 flex items-center shadow-lg hover:shadow-xl transform hover:scale-105">
+                                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center">
                             <i class="fas fa-plus mr-2"></i>
                             Add Product
                         </button>
                     </div>
                     
-                    <div id="productsContainer" class="space-y-6">
+                    <div id="productsContainer" class="space-y-4">
                         <!-- Product rows will be added here -->
                     </div>
 
                     <!-- Order Summary -->
-                    <div class="mt-12 p-8 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl border-2 border-blue-200 shadow-lg">
-                        <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                            <i class="fas fa-receipt text-blue-600 mr-3"></i>
-                            Order Summary
-                        </h3>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 text-lg">
+                    <div class="mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4">Order Summary</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-base">
                             <div class="md:col-span-3 text-right text-gray-700 font-medium">Subtotal:</div>
-                            <div class="text-right font-bold text-gray-900 text-xl" id="subtotal">$0.00</div>
-                            
-                            <div class="md:col-span-3 text-right text-gray-700 font-medium">Shipping:</div>
-                            <div class="text-right">
-                                <input type="number" id="shippingCost" name="shippingCost" value="0" step="0.01" min="0"
-                                       class="w-32 px-3 py-2 border-2 border-gray-300 rounded-lg text-right focus:outline-none focus:border-blue-500 bg-white">
-                            </div>
+                            <div class="text-right font-bold text-gray-900" id="subtotal">$0.00</div>
                             
                             <div class="md:col-span-3 text-right text-gray-700 font-medium">Tax (8.5%):</div>
-                            <div class="text-right font-bold text-gray-900 text-xl" id="taxAmount">$0.00</div>
+                            <div class="text-right font-bold text-gray-900" id="taxAmount">$0.00</div>
                             
-                            <div class="md:col-span-3 text-right text-2xl font-bold text-gray-900 border-t-2 border-gray-300 pt-4">Total:</div>
-                            <div class="text-right text-3xl font-bold text-blue-600 border-t-2 border-gray-300 pt-4" id="totalAmount">$0.00</div>
+                            <div class="md:col-span-3 text-right text-lg font-bold text-gray-900 border-t border-gray-300 pt-3">Total:</div>
+                            <div class="text-right text-xl font-bold text-blue-600 border-t border-gray-300 pt-3" id="totalAmount">$0.00</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Form Actions -->
-                <div class="flex flex-col lg:flex-row justify-end space-y-4 lg:space-y-0 lg:space-x-6 pt-8 border-t-2 border-gray-200">
-                    <a href="{{ url_for('recent_orders') }}" 
-                       class="px-8 py-4 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all duration-300 flex items-center justify-center border-2 border-gray-300 font-semibold">
+                <div class="flex flex-col lg:flex-row justify-end space-y-4 lg:space-y-0 lg:space-x-4 pt-6 border-t border-gray-200">
+                    <a href="{{ url_for('orders') }}" 
+                       class="px-6 py-3 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-center border border-gray-300 font-medium">
                         <i class="fas fa-times mr-2"></i>
                         Cancel
                     </a>
-                    <button type="button" onclick="submitOrder()" 
-                            class="px-8 py-4 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-300 flex items-center justify-center font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
+                    <button type="submit" 
+                            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center font-medium">
                         <i class="fas fa-check mr-2"></i>
                         Create Order
                     </button>
@@ -261,37 +190,12 @@
     </div>
 </div>
 
-<!-- Success Modal -->
-<div id="successModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 backdrop-blur-sm">
-    <div class="bg-white rounded-3xl p-8 w-full max-w-md mx-4 transform transition-all duration-500 scale-95 opacity-0" id="successModalContent">
-        <div class="text-center">
-            <div class="w-20 h-20 bg-gradient-to-r from-green-400 to-green-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
-                <i class="fas fa-check text-white text-3xl"></i>
-            </div>
-            <h3 class="text-2xl font-bold text-gray-900 mb-3">Order Created Successfully!</h3>
-            <p class="text-gray-600 mb-8 leading-relaxed" id="successMessage">
-                Your new order has been created and added to the system.
-            </p>
-            <div class="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
-                <button onclick="closeSuccessModal()" 
-                        class="px-6 py-3 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all duration-300 border-2 border-gray-300 font-medium">
-                    Create Another Order
-                </button>
-                <a href="{{ url_for('recent_orders') }}" 
-                   class="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 font-medium text-center">
-                    View All Orders
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Loading Overlay -->
-<div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl p-8 flex flex-col items-center shadow-2xl transform transition-all duration-300">
-        <div class="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-        <p class="text-gray-700 font-semibold text-lg">Creating Order...</p>
-        <p class="text-gray-500 text-sm mt-2">Please wait while we process your order</p>
+<div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg p-6 flex flex-col items-center shadow-lg">
+        <div class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-3"></div>
+        <p class="text-gray-700 font-medium">Creating Order...</p>
+        <p class="text-gray-500 text-sm mt-1">Please wait while we process your order</p>
     </div>
 </div>
 {% endblock %}
@@ -299,192 +203,104 @@
 {% block scripts %}
 <script>
     let productCounter = 0;
-    let productData = {
-        '1': { name: 'Wireless Mechanical Keyboard', price: 129.99, category: 'Electronics' },
-        '2': { name: 'Noise Cancelling Headphones', price: 299.99, category: 'Audio' },
-        '3': { name: 'Fitness Tracker Watch', price: 79.99, category: 'Wearables' },
-        '4': { name: 'Desk Lamp with Wireless Charger', price: 89.99, category: 'Home' },
-        '5': { name: 'Python Programming Book', price: 39.99, category: 'Books' }
-    };
+    let products = [
+        {% for product in products %}
+        {
+            id: {{ product.id }},
+            name: "{{ product.name }}",
+            price: {{ product.price }},
+            category: "{{ product.category }}",
+            quantity: {{ product.quantity }}
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    ];
 
     document.addEventListener('DOMContentLoaded', function() {
         // Set default date to today
         const today = new Date();
         const formattedDate = today.toISOString().split('T')[0];
-        document.getElementById('orderDate').value = formattedDate;
+        document.querySelector('input[name="order_date"]').value = formattedDate;
         
         // Add first product row
         addProductRow();
         
-        // Add event listeners for calculations
-        document.getElementById('shippingCost').addEventListener('input', calculateTotals);
-        
-        // Add input validation
-        setupValidation();
-        
-        // Add floating labels effect
-        setupFloatingLabels();
+        // Add form submission handler
+        document.getElementById('orderForm').addEventListener('submit', function(e) {
+            if (!validateForm()) {
+                e.preventDefault();
+                return;
+            }
+            
+            // Show loading overlay
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.remove('hidden');
+        });
     });
-
-    function setupFloatingLabels() {
-        const inputs = document.querySelectorAll('input, textarea, select');
-        inputs.forEach(input => {
-            input.addEventListener('focus', function() {
-                this.parentElement.classList.add('focused');
-            });
-            
-            input.addEventListener('blur', function() {
-                if (!this.value) {
-                    this.parentElement.classList.remove('focused');
-                }
-            });
-        });
-    }
-
-    function setupValidation() {
-        const requiredFields = ['customerName', 'customerEmail'];
-        
-        requiredFields.forEach(fieldId => {
-            const field = document.getElementById(fieldId);
-            const errorElement = document.getElementById(fieldId + 'Error');
-            
-            field.addEventListener('blur', function() {
-                validateField(field, errorElement);
-            });
-            
-            field.addEventListener('input', function() {
-                if (field.value.trim()) {
-                    hideError(errorElement);
-                    field.classList.remove('border-red-500');
-                    field.classList.add('border-green-500');
-                    setTimeout(() => {
-                        field.classList.remove('border-green-500');
-                    }, 2000);
-                }
-            });
-        });
-    }
-
-    function validateField(field, errorElement) {
-        if (!field.value.trim()) {
-            showError(errorElement, `${field.previousElementSibling.textContent.trim()} is required`);
-            field.classList.add('border-red-500');
-            field.classList.remove('border-green-500');
-            return false;
-        }
-        
-        if (field.type === 'email' && !isValidEmail(field.value)) {
-            showError(errorElement, 'Please enter a valid email address');
-            field.classList.add('border-red-500');
-            field.classList.remove('border-green-500');
-            return false;
-        }
-        
-        hideError(errorElement);
-        field.classList.remove('border-red-500');
-        field.classList.add('border-green-500');
-        return true;
-    }
-
-    function isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
-
-    function showError(errorElement, message) {
-        errorElement.textContent = message;
-        errorElement.classList.remove('hidden');
-        errorElement.classList.add('animate-pulse');
-    }
-
-    function hideError(errorElement) {
-        errorElement.classList.add('hidden');
-        errorElement.classList.remove('animate-pulse');
-    }
 
     function addProductRow() {
         productCounter++;
         const productsContainer = document.getElementById('productsContainer');
         const productRow = document.createElement('div');
-        productRow.className = 'product-row bg-gradient-to-br from-white to-gray-50 rounded-2xl border-2 border-gray-200 p-6 shadow-lg transform transition-all duration-300 hover:shadow-xl';
+        productRow.className = 'product-row bg-white rounded-lg border border-gray-200 p-4';
         productRow.innerHTML = `
-            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-end">
-                <div class="xl:col-span-5">
-                    <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                        <i class="fas fa-cube text-green-500 mr-2"></i>
-                        Product <span class="text-red-500 ml-1">*</span>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
+                <div class="lg:col-span-5">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Product <span class="text-red-500">*</span>
                     </label>
-                    <select class="product-select w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-300 bg-white appearance-none cursor-pointer">
+                    <select name="product_id[]" class="product-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
                         <option value="">Select a product...</option>
-                        ${Object.entries(productData).map(([id, product]) => 
-                            `<option value="${id}" data-category="${product.category}">${product.name} - $${product.price.toFixed(2)}</option>`
+                        ${products.map(product => 
+                            `<option value="${product.id}" data-price="${product.price}" data-stock="${product.quantity}">
+                                ${product.name} - $${product.price.toFixed(2)} (Stock: ${product.quantity})
+                            </option>`
                         ).join('')}
                     </select>
-                    <p class="text-xs text-red-500 mt-2 hidden product-error flex items-center">
-                        <i class="fas fa-exclamation-circle mr-1"></i>Please select a product
-                    </p>
                 </div>
-                <div class="xl:col-span-2">
-                    <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                        <i class="fas fa-hashtag text-green-500 mr-2"></i>
-                        Quantity <span class="text-red-500 ml-1">*</span>
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Quantity <span class="text-red-500">*</span>
                     </label>
-                    <input type="number" class="product-quantity w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-300 bg-white" 
+                    <input type="number" name="quantity[]" class="product-quantity w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
                            value="1" min="1" required>
-                    <p class="text-xs text-red-500 mt-2 hidden quantity-error flex items-center">
-                        <i class="fas fa-exclamation-circle mr-1"></i>Quantity must be at least 1
-                    </p>
                 </div>
-                <div class="xl:col-span-3">
-                    <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                        <i class="fas fa-dollar-sign text-green-500 mr-2"></i>
+                <div class="lg:col-span-3">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
                         Unit Price ($)
                     </label>
-                    <input type="number" class="product-price w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-green-500 bg-gray-100 font-semibold" 
-                           step="0.01" min="0" placeholder="0.00" required readonly>
+                    <input type="number" class="product-price w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 font-medium" 
+                           step="0.01" min="0" placeholder="0.00" readonly>
                 </div>
-                <div class="xl:col-span-2">
-                    <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                        <i class="fas fa-calculator text-green-500 mr-2"></i>
+                <div class="lg:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
                         Total
                     </label>
-                    <div class="product-total w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-xl text-gray-900 font-bold text-lg text-center">$0.00</div>
+                    <div class="product-total w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-bold text-center">$0.00</div>
                 </div>
             </div>
-            <div class="flex justify-end mt-4">
+            <div class="flex justify-end mt-3">
                 <button type="button" onclick="removeProductRow(this)" 
-                        class="text-red-500 hover:text-red-700 hover:bg-red-50 px-4 py-2 rounded-lg transition-all duration-300 flex items-center border border-red-200">
-                    <i class="fas fa-trash mr-2"></i>
-                    Remove Item
+                        class="text-red-600 hover:text-red-800 hover:bg-red-50 px-3 py-1 rounded transition-colors flex items-center text-sm border border-red-200">
+                    <i class="fas fa-trash mr-1"></i>
+                    Remove
                 </button>
             </div>
         `;
         productsContainer.appendChild(productRow);
 
-        // Add animation
-        productRow.style.opacity = '0';
-        productRow.style.transform = 'translateY(20px)';
-        setTimeout(() => {
-            productRow.style.opacity = '1';
-            productRow.style.transform = 'translateY(0)';
-        }, 50);
-
         // Add event listeners to new row
-        const row = productRow;
-        const productSelect = row.querySelector('.product-select');
-        const quantityInput = row.querySelector('.product-quantity');
+        const productSelect = productRow.querySelector('.product-select');
+        const quantityInput = productRow.querySelector('.product-quantity');
         
         productSelect.addEventListener('change', function() {
             updateProductPrice(this);
             calculateProductTotal(this);
             calculateTotals();
-            validateProductRow(this.closest('.product-row'));
         });
         
         quantityInput.addEventListener('input', function() {
             calculateProductTotal(this);
             calculateTotals();
-            validateProductRow(this.closest('.product-row'));
         });
 
         calculateTotals();
@@ -493,25 +309,19 @@
     function removeProductRow(button) {
         const productRow = button.closest('.product-row');
         if (document.querySelectorAll('.product-row').length > 1) {
-            productRow.style.opacity = '0';
-            productRow.style.transform = 'translateY(-20px)';
-            setTimeout(() => {
-                productRow.remove();
-                calculateTotals();
-            }, 300);
-        } else {
-            // Shake animation for error
-            productRow.classList.add('animate-shake');
-            setTimeout(() => {
-                productRow.classList.remove('animate-shake');
-            }, 500);
+            productRow.remove();
+            calculateTotals();
         }
     }
 
     function updateProductPrice(select) {
         const priceInput = select.closest('.product-row').querySelector('.product-price');
-        const productId = select.value;
-        priceInput.value = productId ? productData[productId].price : '0.00';
+        const selectedOption = select.options[select.selectedIndex];
+        if (selectedOption.value) {
+            priceInput.value = selectedOption.getAttribute('data-price');
+        } else {
+            priceInput.value = '0.00';
+        }
     }
 
     function calculateProductTotal(input) {
@@ -520,52 +330,6 @@
         const price = parseFloat(row.querySelector('.product-price').value) || 0;
         const total = quantity * price;
         row.querySelector('.product-total').textContent = `$${total.toFixed(2)}`;
-    }
-
-    function validateProductRow(row) {
-        const productSelect = row.querySelector('.product-select');
-        const quantityInput = row.querySelector('.product-quantity');
-        const productError = row.querySelector('.product-error');
-        const quantityError = row.querySelector('.quantity-error');
-        
-        let isValid = true;
-        
-        // Validate product selection
-        if (!productSelect.value) {
-            productError.classList.remove('hidden');
-            productSelect.classList.add('border-red-500');
-            isValid = false;
-        } else {
-            productError.classList.add('hidden');
-            productSelect.classList.remove('border-red-500');
-            productSelect.classList.add('border-green-500');
-        }
-        
-        // Validate quantity
-        if (!quantityInput.value || parseInt(quantityInput.value) < 1) {
-            quantityError.classList.remove('hidden');
-            quantityInput.classList.add('border-red-500');
-            isValid = false;
-        } else {
-            quantityError.classList.add('hidden');
-            quantityInput.classList.remove('border-red-500');
-            quantityInput.classList.add('border-green-500');
-        }
-        
-        return isValid;
-    }
-
-    function validateAllProductRows() {
-        const productRows = document.querySelectorAll('.product-row');
-        let allValid = true;
-        
-        productRows.forEach(row => {
-            if (!validateProductRow(row)) {
-                allValid = false;
-            }
-        });
-        
-        return allValid;
     }
 
     function calculateTotals() {
@@ -578,184 +342,74 @@
             subtotal += quantity * price;
         });
 
-        const shipping = parseFloat(document.getElementById('shippingCost').value) || 0;
         const tax = subtotal * 0.085; // 8.5% tax
-        const total = subtotal + shipping + tax;
+        const total = subtotal + tax;
 
-        // Add animation to totals
-        animateValue('subtotal', subtotal.toFixed(2));
-        animateValue('taxAmount', tax.toFixed(2));
-        animateValue('totalAmount', total.toFixed(2));
-    }
-
-    function animateValue(elementId, newValue) {
-        const element = document.getElementById(elementId);
-        const currentValue = parseFloat(element.textContent.replace('$', '')) || 0;
-        const newValueNum = parseFloat(newValue);
-        
-        if (currentValue !== newValueNum) {
-            element.style.color = '#10B981'; // Green color
-            setTimeout(() => {
-                element.style.color = ''; // Reset to original color
-            }, 1000);
-        }
-        
-        element.textContent = `$${newValue}`;
+        document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+        document.getElementById('taxAmount').textContent = `$${tax.toFixed(2)}`;
+        document.getElementById('totalAmount').textContent = `$${total.toFixed(2)}`;
     }
 
     function validateForm() {
         let isValid = true;
         
         // Validate required fields
-        const requiredFields = ['customerName', 'customerEmail'];
-        requiredFields.forEach(fieldId => {
-            const field = document.getElementById(fieldId);
-            const errorElement = document.getElementById(fieldId + 'Error');
-            if (!validateField(field, errorElement)) {
+        const requiredFields = document.querySelectorAll('[required]');
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
                 isValid = false;
+                field.classList.add('border-red-500');
+            } else {
+                field.classList.remove('border-red-500');
             }
         });
         
-        // Validate product rows
-        if (!validateAllProductRows()) {
+        // Validate product quantities don't exceed stock
+        const productRows = document.querySelectorAll('.product-row');
+        let hasValidProducts = false;
+        
+        productRows.forEach(row => {
+            const select = row.querySelector('.product-select');
+            const quantity = row.querySelector('.product-quantity');
+            const selectedOption = select.options[select.selectedIndex];
+            
+            if (select.value && quantity.value) {
+                hasValidProducts = true;
+                
+                const stock = parseInt(selectedOption.getAttribute('data-stock'));
+                const requestedQuantity = parseInt(quantity.value);
+                
+                if (requestedQuantity > stock) {
+                    isValid = false;
+                    quantity.classList.add('border-red-500');
+                    alert(`Not enough stock for ${selectedOption.text}. Available: ${stock}`);
+                }
+            }
+        });
+        
+        if (!hasValidProducts) {
             isValid = false;
+            alert('Please add at least one product to the order.');
         }
         
         return isValid;
     }
 
-    function submitOrder() {
-        if (!validateForm()) {
-            // Scroll to first error with smooth animation
-            const firstError = document.querySelector('.border-red-500');
-            if (firstError) {
-                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                firstError.classList.add('animate-pulse');
-                setTimeout(() => {
-                    firstError.classList.remove('animate-pulse');
-                }, 2000);
-            }
-            return;
-        }
-
-        // Show loading overlay
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        loadingOverlay.classList.remove('hidden');
-        setTimeout(() => {
-            loadingOverlay.style.opacity = '1';
-        }, 10);
-
-        // Simulate API call
-        setTimeout(() => {
-            // Generate order ID
-            const orderId = 'ORD-' + String(Math.floor(100000 + Math.random() * 900000));
-            
-            // Update success message
-            document.getElementById('successMessage').textContent = 
-                `Order ${orderId} has been created successfully and is now in the system. You can track its progress in the Orders section.`;
-            
-            // Hide loading overlay
-            loadingOverlay.style.opacity = '0';
-            setTimeout(() => {
-                loadingOverlay.classList.add('hidden');
-            }, 300);
-            
-            // Show success modal with animation
-            const successModal = document.getElementById('successModal');
-            const successContent = document.getElementById('successModalContent');
-            successModal.classList.remove('hidden');
-            setTimeout(() => {
-                successContent.classList.remove('scale-95', 'opacity-0');
-                successContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }, 2500);
-    }
-
-    function closeSuccessModal() {
-        const successModal = document.getElementById('successModal');
-        const successContent = document.getElementById('successModalContent');
-        
-        successContent.classList.remove('scale-100', 'opacity-100');
-        successContent.classList.add('scale-95', 'opacity-0');
-        
-        setTimeout(() => {
-            successModal.classList.add('hidden');
-            // Reset form for new order
-            document.getElementById('orderForm').reset();
-            document.getElementById('productsContainer').innerHTML = '';
-            productCounter = 0;
-            addProductRow();
-            
-            // Reset date to today
-            const today = new Date();
-            const formattedDate = today.toISOString().split('T')[0];
-            document.getElementById('orderDate').value = formattedDate;
-            
-            // Reset errors and success states
-            document.querySelectorAll('.border-red-500, .border-green-500').forEach(el => {
-                el.classList.remove('border-red-500', 'border-green-500');
-            });
-            document.querySelectorAll('.text-xs.text-red-500').forEach(el => {
-                el.classList.add('hidden');
-            });
-            
-            calculateTotals();
-        }, 300);
-    }
-
-    // Add custom animation for shake
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-        .animate-shake {
-            animation: shake 0.5s ease-in-out;
-        }
-    `;
-    document.head.appendChild(style);
-
     // Auto-calculate on any changes
     document.addEventListener('input', function(event) {
-        if (event.target.matches('.product-quantity, #shippingCost')) {
+        if (event.target.matches('.product-quantity')) {
             calculateTotals();
         }
     });
 </script>
 
 <style>
-    .form-group {
-        position: relative;
-    }
-    
-    .form-group.focused label {
-        transform: translateY(-10px);
-        font-size: 0.875rem;
-        color: #3B82F6;
-    }
-    
     select {
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
         background-position: right 0.5rem center;
         background-repeat: no-repeat;
         background-size: 1.5em 1.5em;
         padding-right: 2.5rem;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-    
-    .product-row {
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    
-    .shadow-lg {
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }
-    
-    .shadow-xl {
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
 </style>
 {% endblock %}
