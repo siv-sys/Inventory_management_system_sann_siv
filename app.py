@@ -448,7 +448,7 @@ def login():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-       
+
         user = User.query.filter_by(email=email).first()
         if user and user.check_password(password):
             session['user_id'] = user.id
@@ -459,7 +459,7 @@ def login():
             return redirect(url_for('dashboard'))
         else:
             flash('Invalid email or password', 'error')
-   
+
     return render_template('login.html')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -698,7 +698,7 @@ def add_product():
                 quantity=quantity,
                 description=description
             )
-           
+
             db.session.add(new_product)
             db.session.commit()
             flash(f'Product "{name}" added to category "{category}" successfully!', 'success')
@@ -709,7 +709,7 @@ def add_product():
         except Exception as e:
             db.session.rollback()
             flash(f'Error adding product: {str(e)}', 'error')
-   
+
     return render_template('add_product.html', existing_categories=existing_categories)
 
 
@@ -717,23 +717,23 @@ def add_product():
 def inventory():
     if 'user_id' not in session:
         return redirect(url_for('login'))
-   
+
     products = Product.query.order_by(Product.created_at.desc()).all()
     # Get unique categories for the filter dropdown
     categories = db.session.query(Product.category).distinct().all()
     categories = [category[0] for category in categories if category[0]]  # Remove any None values
-    
+
     return render_template('inventory.html', products=products, categories=categories)
 
 
 @app.route('/edit_product/<int:product_id>', methods=['GET', 'POST'])
 def edit_product(product_id):
     product = Product.query.get_or_404(product_id)
-    
+
     # Get unique categories for the dropdown
     existing_categories = db.session.query(Product.category).distinct().all()
     existing_categories = [cat[0] for cat in existing_categories]
-    
+
     if request.method == 'POST':
         # Update product logic here
         product.name = request.form['name']
@@ -879,7 +879,7 @@ if __name__ == '__main__':
     # Initialize database
     print("🚀 Starting Inventory Management System...")
     init_database()
-    
+
     print("🌐 Access the application at: http://localhost:5000")
     print("🔑 Demo credentials: demo@example.com / password123")
     app.run(debug=True)

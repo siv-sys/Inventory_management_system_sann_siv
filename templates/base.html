@@ -38,19 +38,24 @@
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="{{ url_for('dashboard') }}"
                         class="text-gray-600 hover:text-blue-600 font-medium {% if request.endpoint == 'dashboard' %}text-blue-600{% endif %}">
-                        Dashboard
+                        <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
                     </a>
                     <a href="{{ url_for('inventory') }}" 
                        class="text-gray-600 hover:text-blue-600 font-medium {% if request.endpoint == 'inventory' %}text-blue-600{% endif %}">
-                        Inventory
+                        <i class="fas fa-boxes mr-3"></i>Inventory
                     </a>
                     <a href="{{ url_for('add_product') }}" 
                        class="text-gray-600 hover:text-blue-600 font-medium {% if request.endpoint == 'add_product' %}text-blue-600{% endif %}">
-                        Add Product
+                        <i class="fas fa-plus-circle mr-3"></i>Add Product
+                    </a>
+                    
+                    <a href="{{ url_for('recent_orders') }}" class="text-gray-600 hover:text-blue-600 font-medium {% if request.endpoint == 'report' %}text-blue-600{% endif %}">
+                    <i class="fas fa-shopping-cart mr-3"></i>
+                        Recent Orders
                     </a>
                     <a href="{{ url_for('report') }}" 
                        class="text-gray-600 hover:text-blue-600 font-medium {% if request.endpoint == 'report' %}text-blue-600{% endif %}">
-                        Reports
+                        <i class="fas fa-chart-line mr-3"></i>Reports
                     </a>
                 </div>
 
