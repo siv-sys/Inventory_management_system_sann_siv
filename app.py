@@ -345,8 +345,9 @@ def get_dashboard_data():
     categories = {}
     for product in products:
         if product.category not in categories:
-            categories[product.category] = 0
-        categories[product.category] += 1
+            categories[product.category] = {'count': 0, 'value': 0}
+        categories[product.category]['count'] += 1
+        categories[product.category]['value'] += p.price * p.quantity
     
     # Product performance data (based on order items)
     product_performance = []
@@ -592,30 +593,49 @@ def create_order():
 @app.route('/edit_order/<int:order_id>', methods=['GET', 'POST'])
 def edit_order(order_id):
     if 'user_id' not in session:
+        if request.is_json:
+            return jsonify({'success': False, 'message': 'Not authenticated'})
         return redirect(url_for('login'))
    
     order = Order.query.get_or_404(order_id)
     
     if request.method == 'POST':
         try:
-            # Update order details
-            order.customer_name = request.form['customer_name']
-            order.customer_email = request.form.get('customer_email', '')
-            order.customer_phone = request.form.get('customer_phone', '')
-            order.order_date = datetime.strptime(request.form['order_date'], '%Y-%m-%d')
-            order.status = request.form['status']
-            order.tracking_number = request.form.get('tracking_number', '')
-            order.shipping_address = request.form.get('shipping_address', '')
-            order.notes = request.form.get('notes', '')
-            
-            db.session.commit()
-            flash('Order updated successfully!', 'success')
-            return redirect(url_for('orders'))
+            # Check if it's a JSON request (from recent-orders modal)
+            if request.is_json:
+                data = request.get_json()
+                order.customer_name = data['customerName']
+                order.customer_email = data['customerEmail']
+                order.order_date = datetime.strptime(data['orderDate'], '%Y-%m-%d')
+                order.amount = data['orderAmount']
+                order.status = data['orderStatus']
+                
+                db.session.commit()
+                return jsonify({'success': True, 'message': 'Order updated successfully!'})
+            else:
+                # Regular form submission (from edit-order page)
+                order.customer_name = request.form['customerName']
+                order.customer_email = request.form.get('customerEmail', '')
+                order.customer_phone = request.form.get('customerPhone', '')
+                order.order_date = datetime.strptime(request.form['orderDate'], '%Y-%m-%d')
+                order.status = request.form['orderStatus']
+                order.tracking_number = request.form.get('trackingNumber', '')
+                order.shipping_address = request.form.get('shippingAddress', '')
+                order.notes = request.form.get('orderNotes', '')
+                order.amount = float(request.form.get('orderAmount', order.amount))
+                
+                db.session.commit()
+                flash('Order updated successfully!', 'success')
+                return redirect(url_for('recent_orders'))
             
         except Exception as e:
             db.session.rollback()
-            flash(f'Error updating order: {str(e)}', 'error')
+            if request.is_json:
+                return jsonify({'success': False, 'message': f'Error updating order: {str(e)}'})
+            else:
+                flash(f'Error updating order: {str(e)}', 'error')
     
+    # For GET requests, render the edit form
     return render_template('edit_order.html', order=order)
 
 @app.route('/delete_order/<int:order_id>', methods=['POST'])
