@@ -1,27 +1,27 @@
 {% extends "base.html" %}
 
-{% block title %}Add New Order - Inventory System{% endblock %}
+{% block title %}Create New Order - Inventory System{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gray-50 py-8">
-    <div class="max-w-6xl mx-auto px-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header Section -->
         <div class="mb-8">
-            <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-200">
+            <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-xl p-8 mb-6 text-white">
                 <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
                     <div class="flex items-center">
-                        <div class="bg-blue-600 p-3 rounded-lg mr-4">
-                            <i class="fas fa-shopping-cart text-white text-2xl"></i>
+                        <div class="bg-white/20 p-4 rounded-2xl mr-6 backdrop-blur-sm">
+                            <i class="fas fa-shopping-cart text-white text-3xl"></i>
                         </div>
                         <div>
-                            <h1 class="text-3xl font-bold text-gray-900">Create New Order</h1>
-                            <p class="text-gray-600 mt-1">Add a new customer order to the system</p>
+                            <h1 class="text-4xl font-bold mb-2">Create New Order</h1>
+                            <p class="text-blue-100 text-lg">Add a new customer order to the inventory system</p>
                         </div>
                     </div>
                     <div class="flex space-x-3">
                         <a href="{{ url_for('orders') }}" 
-                           class="bg-white text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors flex items-center border border-gray-300">
-                            <i class="fas fa-arrow-left mr-2"></i>
+                           class="bg-white/20 hover:bg-white/30 text-white px-8 py-4 rounded-xl transition-all duration-300 flex items-center backdrop-blur-sm border border-white/20 hover:border-white/30">
+                            <i class="fas fa-arrow-left mr-3"></i>
                             Back to Orders
                         </a>
                     </div>
@@ -30,158 +30,170 @@
         </div>
 
         <!-- Order Form -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <form id="orderForm" method="POST" action="{{ url_for('create_order') }}" class="p-6">
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+            <form id="orderForm" method="POST" action="{{ url_for('create_order') }}" class="p-8">
                 <!-- Customer Information -->
-                <div class="mb-8">
-                    <div class="flex items-center mb-4">
-                        <div class="bg-blue-600 p-2 rounded-lg mr-3">
-                            <i class="fas fa-user text-white text-lg"></i>
+                <div class="mb-12">
+                    <div class="flex items-center mb-8">
+                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-3 rounded-xl mr-4 shadow-lg">
+                            <i class="fas fa-user text-white text-xl"></i>
                         </div>
-                        <h2 class="text-xl font-bold text-gray-900">Customer Information</h2>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">Customer Information</h2>
+                            <p class="text-gray-500 mt-1">Enter customer details and shipping information</p>
+                        </div>
                     </div>
                     
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div class="space-y-4">
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                        <div class="space-y-6">
                             <div class="form-group">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">
                                     Customer Name <span class="text-red-500">*</span>
                                 </label>
                                 <input type="text" name="customer_name" required
-                                       class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                       class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:border-gray-300"
                                        placeholder="Enter customer full name">
                             </div>
 
                             <div class="form-group">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">
                                     Email Address
                                 </label>
                                 <input type="email" name="customer_email"
-                                       class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                       class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:border-gray-300"
                                        placeholder="customer@example.com">
                             </div>
 
                             <div class="form-group">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">
                                     Phone Number
                                 </label>
                                 <input type="tel" name="customer_phone"
-                                       class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                       class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:border-gray-300"
                                        placeholder="+1 (555) 123-4567">
                             </div>
                         </div>
 
-                        <div class="space-y-4">
+                        <div class="space-y-6">
                             <div class="form-group">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">
                                     Shipping Address
                                 </label>
-                                <textarea name="shipping_address" rows="3"
-                                          class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
-                                          placeholder="Enter complete shipping address..."></textarea>
+                                <textarea name="shipping_address" rows="4"
+                                          class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:border-gray-300 resize-none"
+                                          placeholder="Enter complete shipping address including street, city, state, and zip code..."></textarea>
                             </div>
 
                             <div class="form-group">
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">
                                     Order Notes
                                 </label>
                                 <textarea name="notes" rows="3"
-                                          class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
-                                          placeholder="Add any special instructions or notes for this order..."></textarea>
+                                          class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:border-gray-300 resize-none"
+                                          placeholder="Add any special instructions, gift messages, or delivery preferences..."></textarea>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Order Details -->
-                <div class="mb-8">
-                    <div class="flex items-center mb-4">
-                        <div class="bg-purple-600 p-2 rounded-lg mr-3">
-                            <i class="fas fa-clipboard-list text-white text-lg"></i>
+                <div class="mb-12">
+                    <div class="flex items-center mb-8">
+                        <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-3 rounded-xl mr-4 shadow-lg">
+                            <i class="fas fa-clipboard-list text-white text-xl"></i>
                         </div>
-                        <h2 class="text-xl font-bold text-gray-900">Order Details</h2>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">Order Details</h2>
+                            <p class="text-gray-500 mt-1">Set order status, date, and tracking information</p>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div class="form-group">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
                                 Order Date <span class="text-red-500">*</span>
                             </label>
                             <input type="date" name="order_date" required
-                                   class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                   class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:border-gray-300">
                         </div>
 
                         <div class="form-group">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
                                 Status <span class="text-red-500">*</span>
                             </label>
                             <select name="status" required
-                                    class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none cursor-pointer">
-                                <option value="Pending" selected>Pending</option>
-                                <option value="Processing">Processing</option>
-                                <option value="Shipped">Shipped</option>
-                                <option value="Delivered">Delivered</option>
-                                <option value="Cancelled">Cancelled</option>
+                                    class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:border-gray-300 appearance-none cursor-pointer bg-white">
+                                <option value="Pending" selected>🟡 Pending</option>
+                                <option value="Processing">🟠 Processing</option>
+                                <option value="Shipped">🔵 Shipped</option>
+                                <option value="Delivered">🟢 Delivered</option>
+                                <option value="Cancelled">🔴 Cancelled</option>
                             </select>
                         </div>
 
                         <div class="form-group">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
                                 Tracking Number
                             </label>
                             <input type="text" name="tracking_number"
-                                   class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                   placeholder="Optional tracking number">
+                                   class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:border-gray-300"
+                                   placeholder="Enter tracking number (optional)">
                         </div>
                     </div>
                 </div>
 
                 <!-- Products Section -->
-                <div class="mb-8">
-                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 gap-4">
+                <div class="mb-12">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6">
                         <div class="flex items-center">
-                            <div class="bg-green-600 p-2 rounded-lg mr-3">
-                                <i class="fas fa-boxes text-white text-lg"></i>
+                            <div class="bg-gradient-to-r from-green-500 to-green-600 p-3 rounded-xl mr-4 shadow-lg">
+                                <i class="fas fa-boxes text-white text-xl"></i>
                             </div>
-                            <h2 class="text-xl font-bold text-gray-900">Order Items</h2>
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">Order Items</h2>
+                                <p class="text-gray-500 mt-1">Add products and quantities for this order</p>
+                            </div>
                         </div>
                         <button type="button" onclick="addProductRow()" 
-                                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center">
-                            <i class="fas fa-plus mr-2"></i>
-                            Add Product
+                                class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-4 rounded-xl transition-all duration-300 flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                            <i class="fas fa-plus mr-3"></i>
+                            Add Product Item
                         </button>
                     </div>
                     
-                    <div id="productsContainer" class="space-y-4">
+                    <div id="productsContainer" class="space-y-6">
                         <!-- Product rows will be added here -->
                     </div>
 
                     <!-- Order Summary -->
-                    <div class="mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">Order Summary</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-base">
-                            <div class="md:col-span-3 text-right text-gray-700 font-medium">Subtotal:</div>
-                            <div class="text-right font-bold text-gray-900" id="subtotal">$0.00</div>
+                    <div class="mt-12 p-8 bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl border border-gray-200 shadow-lg">
+                        <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                            <i class="fas fa-receipt mr-3 text-blue-600"></i>
+                            Order Summary
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 text-lg">
+                            <div class="md:col-span-3 text-right text-gray-700 font-semibold">Subtotal:</div>
+                            <div class="text-right font-bold text-gray-900 text-xl" id="subtotal">$0.00</div>
                             
-                            <div class="md:col-span-3 text-right text-gray-700 font-medium">Tax (8.5%):</div>
-                            <div class="text-right font-bold text-gray-900" id="taxAmount">$0.00</div>
+                            <div class="md:col-span-3 text-right text-gray-700 font-semibold">Tax (8.5%):</div>
+                            <div class="text-right font-bold text-gray-900 text-xl" id="taxAmount">$0.00</div>
                             
-                            <div class="md:col-span-3 text-right text-lg font-bold text-gray-900 border-t border-gray-300 pt-3">Total:</div>
-                            <div class="text-right text-xl font-bold text-blue-600 border-t border-gray-300 pt-3" id="totalAmount">$0.00</div>
+                            <div class="md:col-span-3 text-right text-2xl font-bold text-gray-900 border-t-2 border-gray-300 pt-4">Total Amount:</div>
+                            <div class="text-right text-3xl font-bold text-blue-600 border-t-2 border-gray-300 pt-4" id="totalAmount">$0.00</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Form Actions -->
-                <div class="flex flex-col lg:flex-row justify-end space-y-4 lg:space-y-0 lg:space-x-4 pt-6 border-t border-gray-200">
+                <div class="flex flex-col lg:flex-row justify-end space-y-4 lg:space-y-0 lg:space-x-6 pt-8 border-t-2 border-gray-200">
                     <a href="{{ url_for('orders') }}" 
-                       class="px-6 py-3 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-center border border-gray-300 font-medium">
-                        <i class="fas fa-times mr-2"></i>
-                        Cancel
+                       class="px-8 py-4 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-all duration-300 flex items-center justify-center border-2 border-gray-300 font-semibold hover:border-gray-400">
+                        <i class="fas fa-times mr-3"></i>
+                        Cancel Order
                     </a>
                     <button type="submit" 
-                            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center font-medium">
-                        <i class="fas fa-check mr-2"></i>
+                            class="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white rounded-xl transition-all duration-300 flex items-center justify-center font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                        <i class="fas fa-check-circle mr-3"></i>
                         Create Order
                     </button>
                 </div>
@@ -191,11 +203,11 @@
 </div>
 
 <!-- Loading Overlay -->
-<div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-lg p-6 flex flex-col items-center shadow-lg">
-        <div class="w-12 h-12 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-3"></div>
-        <p class="text-gray-700 font-medium">Creating Order...</p>
-        <p class="text-gray-500 text-sm mt-1">Please wait while we process your order</p>
+<div id="loadingOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-2xl p-8 flex flex-col items-center shadow-2xl transform transition-all duration-300">
+        <div class="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+        <p class="text-gray-800 font-semibold text-lg mb-2">Creating Order...</p>
+        <p class="text-gray-600 text-sm">Please wait while we process your order</p>
     </div>
 </div>
 {% endblock %}
@@ -210,7 +222,8 @@
             name: "{{ product.name }}",
             price: {{ product.price }},
             category: "{{ product.category }}",
-            quantity: {{ product.quantity }}
+            quantity: {{ product.quantity }},
+            description: "{{ product.description }}"
         }{% if not loop.last %},{% endif %}
         {% endfor %}
     ];
@@ -241,48 +254,62 @@
         productCounter++;
         const productsContainer = document.getElementById('productsContainer');
         const productRow = document.createElement('div');
-        productRow.className = 'product-row bg-white rounded-lg border border-gray-200 p-4';
+        productRow.className = 'product-row bg-gradient-to-r from-white to-gray-50 rounded-2xl border-2 border-gray-200 p-6 shadow-lg hover:shadow-xl transition-all duration-300';
         productRow.innerHTML = `
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-end">
-                <div class="lg:col-span-5">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Product <span class="text-red-500">*</span>
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-end">
+                <div class="xl:col-span-6">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        <i class="fas fa-cube mr-2 text-blue-600"></i>
+                        Select Product <span class="text-red-500">*</span>
                     </label>
-                    <select name="product_id[]" class="product-select w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" required>
-                        <option value="">Select a product...</option>
+                    <select name="product_id[]" class="product-select w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:border-gray-300 appearance-none cursor-pointer bg-white" required>
+                        <option value="">📦 Choose a product from inventory...</option>
                         ${products.map(product => 
-                            `<option value="${product.id}" data-price="${product.price}" data-stock="${product.quantity}">
-                                ${product.name} - $${product.price.toFixed(2)} (Stock: ${product.quantity})
+                            `<option value="${product.id}" data-price="${product.price}" data-stock="${product.quantity}" data-category="${product.category}">
+                                🏷️ ${product.name} • $${product.price.toFixed(2)} • 📊 Stock: ${product.quantity} • 📁 ${product.category}
                             </option>`
                         ).join('')}
                     </select>
+                    <div class="text-xs text-gray-500 mt-2 flex items-center">
+                        <i class="fas fa-info-circle mr-1 text-blue-500"></i>
+                        Select a product to see pricing and availability
+                    </div>
                 </div>
-                <div class="lg:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                <div class="xl:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        <i class="fas fa-hashtag mr-2 text-green-600"></i>
                         Quantity <span class="text-red-500">*</span>
                     </label>
-                    <input type="number" name="quantity[]" class="product-quantity w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
-                           value="1" min="1" required>
+                    <input type="number" name="quantity[]" class="product-quantity w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:border-gray-300" 
+                           value="1" min="1" max="1000" required>
                 </div>
-                <div class="lg:col-span-3">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Unit Price ($)
+                <div class="xl:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        <i class="fas fa-tag mr-2 text-purple-600"></i>
+                        Unit Price
                     </label>
-                    <input type="number" class="product-price w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 font-medium" 
-                           step="0.01" min="0" placeholder="0.00" readonly>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-semibold">$</span>
+                        <input type="number" class="product-price w-full px-4 py-4 pl-10 border-2 border-gray-200 rounded-xl bg-gray-50 font-semibold text-gray-700" 
+                               step="0.01" min="0" placeholder="0.00" readonly>
+                    </div>
                 </div>
-                <div class="lg:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Total
+                <div class="xl:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">
+                        <i class="fas fa-calculator mr-2 text-orange-600"></i>
+                        Line Total
                     </label>
-                    <div class="product-total w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 font-bold text-center">$0.00</div>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-semibold">$</span>
+                        <div class="product-total w-full px-4 py-4 pl-10 bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 rounded-xl text-gray-900 font-bold text-lg text-center">0.00</div>
+                    </div>
                 </div>
             </div>
-            <div class="flex justify-end mt-3">
+            <div class="flex justify-end mt-4">
                 <button type="button" onclick="removeProductRow(this)" 
-                        class="text-red-600 hover:text-red-800 hover:bg-red-50 px-3 py-1 rounded transition-colors flex items-center text-sm border border-red-200">
-                    <i class="fas fa-trash mr-1"></i>
-                    Remove
+                        class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-3 rounded-xl transition-all duration-300 flex items-center text-sm font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    <i class="fas fa-trash mr-2"></i>
+                    Remove Item
                 </button>
             </div>
         `;
@@ -309,8 +336,24 @@
     function removeProductRow(button) {
         const productRow = button.closest('.product-row');
         if (document.querySelectorAll('.product-row').length > 1) {
-            productRow.remove();
-            calculateTotals();
+            productRow.style.opacity = '0';
+            productRow.style.transform = 'translateX(100px)';
+            setTimeout(() => {
+                productRow.remove();
+                calculateTotals();
+            }, 300);
+        } else {
+            // Show error message if trying to remove the last row
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-xl shadow-lg z-50';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    <span>At least one product is required</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
         }
     }
 
@@ -329,7 +372,7 @@
         const quantity = parseFloat(row.querySelector('.product-quantity').value) || 0;
         const price = parseFloat(row.querySelector('.product-price').value) || 0;
         const total = quantity * price;
-        row.querySelector('.product-total').textContent = `$${total.toFixed(2)}`;
+        row.querySelector('.product-total').textContent = total.toFixed(2);
     }
 
     function calculateTotals() {
@@ -358,9 +401,11 @@
         requiredFields.forEach(field => {
             if (!field.value.trim()) {
                 isValid = false;
-                field.classList.add('border-red-500');
+                field.classList.add('border-red-500', 'border-2');
+                field.classList.remove('border-gray-200');
             } else {
                 field.classList.remove('border-red-500');
+                field.classList.add('border-gray-200');
             }
         });
         
@@ -381,15 +426,36 @@
                 
                 if (requestedQuantity > stock) {
                     isValid = false;
-                    quantity.classList.add('border-red-500');
-                    alert(`Not enough stock for ${selectedOption.text}. Available: ${stock}`);
+                    quantity.classList.add('border-red-500', 'border-2');
+                    quantity.classList.remove('border-gray-200');
+                    
+                    // Show stock error notification
+                    const notification = document.createElement('div');
+                    notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-xl shadow-lg z-50';
+                    notification.innerHTML = `
+                        <div class="flex items-center">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            <span>Insufficient stock for ${selectedOption.text.split('•')[0].trim()}. Available: ${stock}</span>
+                        </div>
+                    `;
+                    document.body.appendChild(notification);
+                    setTimeout(() => notification.remove(), 5000);
                 }
             }
         });
         
         if (!hasValidProducts) {
             isValid = false;
-            alert('Please add at least one product to the order.');
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-3 rounded-xl shadow-lg z-50';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    <span>Please add at least one product to the order</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 5000);
         }
         
         return isValid;
@@ -406,10 +472,20 @@
 <style>
     select {
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
-        background-position: right 0.5rem center;
+        background-position: right 1rem center;
         background-repeat: no-repeat;
         background-size: 1.5em 1.5em;
-        padding-right: 2.5rem;
+        padding-right: 3rem;
+    }
+    
+    .product-select option {
+        padding: 12px;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    
+    .product-select option:hover {
+        background-color: #3b82f6 !important;
+        color: white !important;
     }
 </style>
 {% endblock %}

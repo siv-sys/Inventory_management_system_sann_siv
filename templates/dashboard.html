@@ -67,7 +67,6 @@
     <!-- Left Column -->
     <div class="lg:col-span-2 space-y-6">
       <!-- Stats Cards -->
-      <!-- Stats Cards -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white rounded-xl shadow p-6">
           <div class="flex justify-between items-start">
@@ -195,7 +194,11 @@
                 </div>
                 <div>
                   <div class="text-lg font-bold text-green-600">
-                    {{ ((categories.values()|max / total_products * 100)|round(1) if total_products > 0 else 0) }}%
+                    {% if categories %}
+                      {{ ((categories.values()|max / total_products * 100)|round(1) if total_products > 0 else 0) }}%
+                    {% else %}
+                      0%
+                    {% endif %}
                   </div>
                   <div class="text-xs text-gray-500">Largest Category</div>
                 </div>
@@ -400,76 +403,77 @@
   document.addEventListener('DOMContentLoaded', function () {
     const pieCtx = document.getElementById('inventoryPieChart').getContext('2d');
 
-    const categoryLabels = {{ categories.keys() | list | tojson
-  }};
-  const categoryCounts = {{ categories.values() | list | tojson }};
+    // Get category data from template - FIXED
+    const categoryData = {{ categories | tojson }};
+    const categoryLabels = Object.keys(categoryData);
+    const categoryCounts = Object.values(categoryData);
 
-  // Beautiful color palette
-  const pieColors = [
-    '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444',
-    '#06b6d4', '#84cc16', '#f97316', '#6366f1', '#ec4899',
-    '#14b8a6', '#f43f5e', '#8b5cf6', '#06b6d4', '#84cc16'
-  ];
+    // Beautiful color palette
+    const pieColors = [
+      '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444',
+      '#06b6d4', '#84cc16', '#f97316', '#6366f1', '#ec4899',
+      '#14b8a6', '#f43f5e', '#8b5cf6', '#06b6d4', '#84cc16'
+    ];
 
-  pieChart = new Chart(pieCtx, {
-    type: 'doughnut',
-    data: {
-      labels: categoryLabels,
-      datasets: [
-        {
-          data: categoryCounts,
-          backgroundColor: pieColors.slice(0, categoryLabels.length),
-          borderColor: '#ffffff',
-          borderWidth: 3,
-          hoverBorderWidth: 4,
-          hoverOffset: 8,
-          spacing: 2
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          display: false
-        },
-        tooltip: {
-          backgroundColor: 'rgba(255, 255, 255, 0.95)',
-          titleColor: '#1f2937',
-          bodyColor: '#374151',
-          borderColor: '#e5e7eb',
-          borderWidth: 1,
-          cornerRadius: 8,
-          padding: 12,
-          displayColors: true,
-          callbacks: {
-            label: function (context) {
-              const label = context.label || '';
-              const value = context.parsed;
-              const total = context.dataset.data.reduce((a, b) => a + b, 0);
-              const percentage = ((value / total) * 100).toFixed(1);
-              return [
-                `${label}: ${value} products`,
-                `${percentage}% of total`
-              ];
+    pieChart = new Chart(pieCtx, {
+      type: 'doughnut',
+      data: {
+        labels: categoryLabels,
+        datasets: [
+          {
+            data: categoryCounts,
+            backgroundColor: pieColors.slice(0, categoryLabels.length),
+            borderColor: '#ffffff',
+            borderWidth: 3,
+            hoverBorderWidth: 4,
+            hoverOffset: 8,
+            spacing: 2
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            titleColor: '#1f2937',
+            bodyColor: '#374151',
+            borderColor: '#e5e7eb',
+            borderWidth: 1,
+            cornerRadius: 8,
+            padding: 12,
+            displayColors: true,
+            callbacks: {
+              label: function (context) {
+                const label = context.label || '';
+                const value = context.parsed;
+                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                const percentage = ((value / total) * 100).toFixed(1);
+                return [
+                  `${label}: ${value} products`,
+                  `${percentage}% of total`
+                ];
+              }
             }
           }
+        },
+        cutout: '65%',
+        animation: {
+          animateScale: true,
+          animateRotate: true,
+          duration: 1000,
+          easing: 'easeOutQuart'
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index'
         }
-      },
-      cutout: '65%',
-      animation: {
-        animateScale: true,
-        animateRotate: true,
-        duration: 1000,
-        easing: 'easeOutQuart'
-      },
-      interaction: {
-        intersect: false,
-        mode: 'index'
       }
-    }
-  });
+    });
   });
 
   // Highlight slice on legend hover
