@@ -98,6 +98,25 @@ class Sale(db.Model):
 # Database Initialization
 # ------------------------------------------------------------------------------
 
+def get_order_by_id(order_id):
+    # This is a placeholder - implement based on your actual database model
+    # Example using SQLAlchemy:
+    # return Order.query.get_or_404(order_id)
+    
+    # For now, return a mock order object
+    class MockOrder:
+        def __init__(self, order_id):
+            self.id = order_id
+            self.order_id = f"ORD-{order_id:03d}"
+            self.customer_name = "John Doe"
+            self.customer_email = f"john.doe{order_id}@example.com"
+            self.order_date = datetime.now()
+            self.amount = 150.75
+            self.status = "Processing"
+            self.items = []  # You can populate this with order items
+    
+    return MockOrder(order_id)
+
 
 def init_database():
     """Initialize the database with sample data"""
